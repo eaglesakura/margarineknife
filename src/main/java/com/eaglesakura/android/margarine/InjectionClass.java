@@ -1,8 +1,5 @@
 package com.eaglesakura.android.margarine;
 
-import com.eaglesakura.util.CollectionUtil;
-import com.eaglesakura.util.ReflectionUtil;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -12,6 +9,7 @@ import android.view.View;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,16 +32,18 @@ public class InjectionClass {
      */
     public List<FieldBinder> listBindFields(Context context) {
         if (mBindFields == null) {
-            mBindFields = CollectionUtil.asOtherList(ReflectionUtil.listAnnotationFields(mClass, BindRes.class),
-                    it -> new FieldBinder(context, it)
-            );
+            List<Field> fields = InternalUtils.listAnnotationFields(mClass, BindRes.class);
+            mBindFields = new ArrayList<>(fields.size());
+            for (Field field : fields) {
+                mBindFields.add(new FieldBinder(context, field));
+            }
         }
 
         return mBindFields;
     }
 
     private void addBindMethods(Context context, Class<? extends Annotation> annotationClass) throws Exception {
-        List<Method> methodList = ReflectionUtil.listAnnotationMethods(mClass, annotationClass);
+        List<Method> methodList = InternalUtils.listAnnotationMethods(mClass, annotationClass);
         for (Method method : methodList) {
             Annotation annotation = method.getAnnotation(annotationClass);
             Class binderClass = (Class) annotationClass.getMethod("binder").invoke(annotation);
