@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <View
+            android:id="@+id/BindTest.View"
+            android:layout_width="match_parent" android:layout_height="32dp"/>
+
+    <TextView
+            android:id="@+id/BindTest.TextView"
+            android:layout_width="match_parent" android:layout_height="32dp"/>
+
+    <FrameLayout
+            android:id="@+id/BindTest.FrameLayout"
+            android:layout_width="match_parent" android:layout_height="32dp"/>
+
+    <CheckBox
+            android:id="@+id/BindTest.CheckBox"
+            android:layout_width="match_parent" android:layout_height="32dp"/>
+
+</LinearLayout>

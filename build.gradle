@@ -1,0 +1,251 @@
+/**
+ * 1.0.0  : release
+ * 1.0.1  : Fragmentを強制的に子まで呼び出している不具合を修正
+ * 1.0.x  : Circle CIに移行
+ */
+def ARTIFACT_VERSION = "1.0"
+def ARTIFACT_NAME = file(".").absoluteFile.name
+def ARTIFACT_INSTALL_TARGET = getArtifactInstallTarget()
+
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    repositories {
+        maven { url "http://eaglesakura.github.io/maven/" }
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.1.+'
+        classpath 'me.tatarka:gradle-retrolambda:3.2.5' // support Lambda
+    }
+}
+
+repositories {
+    maven { url "http://eaglesakura.github.io/maven/" }
+    mavenCentral()
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'me.tatarka.retrolambda' /* Android Lambda Support */
+
+// Local or maven
+if (!hasProperty("EGLIBRARY_COMPILE_LOCAL")) {
+    ext.EGLIBRARY_COMPILE_LOCAL = false
+}
+// check env
+if (!hasProperty("ANDROID_SUPPORT_LIB_VERSION")) {
+    ext.ANDROID_SUPPORT_LIB_VERSION = "23.+"
+}
+
+dependencies {
+    /**
+     * support libs
+     */
+    compile "com.android.support:support-v4:${ANDROID_SUPPORT_LIB_VERSION}"
+
+    if (EGLIBRARY_COMPILE_LOCAL) {
+        compile project(":eglibrary:simple-utils")
+
+        testCompile project(":eglibrary:android-unittest-support")
+
+        androidTestCompile project(":eglibrary:android-simple-utils")
+        androidTestCompile project(":eglibrary:android-thread")
+        androidTestCompile project(":eglibrary:android-devicetest-support")
+    } else {
+        compile 'com.eaglesakura:android-simple-utils:1.+'
+
+        testCompile 'com.eaglesakura:android-unittest-support:1.+'
+
+        androidTestCompile 'com.eaglesakura:android-simple-utils:1.+'
+        androidTestCompile 'com.eaglesakura:android-thread:1.+'
+        androidTestCompile 'com.eaglesakura:android-devicetest-support:1.+'
+    }
+}
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    defaultConfig {
+        minSdkVersion 10
+        targetSdkVersion 23
+    }
+}
+
+/**
+ * UnitTest & retro lambda
+ */
+tasks.withType(Test) {
+    project.tasks
+            .findAll {
+        task -> (task.name ==~ /compile.*?TestJava.*?/)
+    }
+    .each { task ->
+        task.doFirst {
+            sourceCompatibility = JavaVersion.VERSION_1_8
+            targetCompatibility = JavaVersion.VERSION_1_8
+        }
+    }
+}
+
+// check env
+if (!hasProperty("ANDROID_SUPPORT_LIB_VERSION")) {
+    ext.ANDROID_SUPPORT_LIB_VERSION = "+"
+}
+
+apply plugin: 'maven'
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+android.libraryVariants.all { variant ->
+    if (!"release".equals(variant.name) || "".equals(ARTIFACT_VERSION)) {
+        return;
+    }
+
+    task("javadoc", type: Javadoc) {
+        title = "${file(".").name} ver ${ARTIFACT_VERSION}"
+        description "Generates Android Javadoc for $variant.name."
+        source = variant.javaCompile.source
+        ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
+        classpath = files(variant.javaCompile.classpath.files) + files(ext.androidJar) + files("build/intermediates/classes/${variant.name}/")
+        options.links("http://docs.oracle.com/javase/8/docs/api/");
+        options.links("http://d.android.com/reference/");
+        exclude '**/BuildConfig.java'
+        exclude '**/*Dao.java' /* ignore greenDAO */
+        exclude '**/DaoMaster.java' /* ignore greenDAO */
+        exclude '**/DaoSession.java' /* ignore greenDAO */
+        exclude '**/R.java' /* ignore greenDAO */
+
+
+        options.addStringOption('Xdoclint:none', '-quiet')
+        options.encoding = "UTF-8"
+        project.configure(options) {
+            memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PROTECTED
+            charSet = "UTF-8"
+        }
+    }
+
+
+    task("javadocJar", type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    artifacts {
+        archives javadocJar
+        archives sourcesJar
+    }
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: uri(ARTIFACT_INSTALL_TARGET))
+            pom.version = ARTIFACT_VERSION + getArtifactVersionSuffix()
+            pom.groupId = "com.eaglesakura"
+            pom.artifactId = ARTIFACT_NAME
+        }
+    }
+}
+
+[uploadArchives.repositories.mavenDeployer]*.pom*.whenConfigured { pom ->
+    pom.project {
+        inceptionYear '2016'
+        packaging 'aar'
+        licenses {
+            license {
+                name 'MIT License'
+                url 'https://raw.githubusercontent.com/eaglesakura/onactivityresult-invoke/master/LICENSE.txt'
+            }
+        }
+        dependencies {
+            dependency {
+                groupId 'com.eaglesakura'
+                artifactId = 'simple-utils'
+                version = dependenceisVersion("com.eaglesakura:simple-utils", "1.1.+")
+                scope = 'compile'
+            }
+        }
+    }
+}
+
+task uploadJavadoc << {
+    def src = file("build/docs/javadoc/");
+    def dst = new File("${ARTIFACT_INSTALL_TARGET.absolutePath}/doc/${ARTIFACT_NAME}/");
+    dst.deleteDir();
+    dst.mkdirs();
+
+    ["/usr/bin/rsync", "-a", src.absolutePath, dst.absolutePath].execute().text;
+}
+
+/**
+ * 依存している固定ライブラリバージョンを取得する
+ */
+String dependenceisVersion(String libName, String defVersion) {
+    def lines = [];
+    def target = file("dependencies.txt");
+    if (!target.file) {
+        return defVersion;
+    }
+
+    target.text.eachLine {
+        if (!it.contains(libName) || it.contains("(")) {
+            return;
+        }
+
+        def tokens = it.split(" ");
+        if (tokens == null || tokens.length == 0) {
+            return;
+        }
+
+        // バージョン固定されている場合は"lib:name:1.0.0"とフルで取得できてしまうので、分割して再度最後を取得する
+        def version = tokens[tokens.length - 1];
+        if (version.startsWith(libName)) {
+            def splitVersions = version.split(":");
+            version = splitVersions[splitVersions.length - 1];
+        }
+        lines += version;
+    }
+    if (lines.empty) {
+        println("${libName} -> ${defVersion}")
+        return defVersion;
+    } else {
+        println("${libName} -> ${lines[0]}")
+        return lines[0];
+    }
+}
+
+/**
+ * バージョンを取得する
+ * CircleCIの場合、バージョン末尾にビルド番号を付与する
+ */
+def getArtifactVersionSuffix() {
+    if (System.env.CIRCLE_BUILD_NUM != null) {
+        // CircleCIのバージョンが指定されているので、そちらを利用する
+        return ".${System.env.CIRCLE_BUILD_NUM}"
+    } else {
+        return ".local"
+    }
+}
+
+/**
+ * Mavenの格納先を確定する
+ */
+def getArtifactInstallTarget() {
+    if (file("maven").directory) {
+        return file("maven");
+    } else if (System.env.CIRCLE_ARTIFACTS != null) {
+        return file(System.env.CIRCLE_ARTIFACTS);
+    } else if (System.env.MAVEN_LOCAL_REPO != null) {
+        return file(System.env.MAVEN_LOCAL_REPO);
+    } else {
+        return file("ci-release");
+    }
+}
