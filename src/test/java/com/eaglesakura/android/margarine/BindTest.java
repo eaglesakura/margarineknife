@@ -8,19 +8,19 @@ public class BindTest extends UnitTestCase {
 
     @Test(expected = ResourceBindError.class)
     public void フィールドのバインドに失敗する() throws Exception {
-        MargarineKnife.bind(new View(getContext()), new FieldBindObject());
+        MargarineKnife.bind(new FieldBindObject(), new View(getContext()));
     }
 
     @Test(expected = MethodBindError.class)
     public void メソッドのバインドに失敗する() throws Exception {
-        MargarineKnife.bind(new View(getContext()), new MethodBindObject());
+        MargarineKnife.bind(new MethodBindObject(), new View(getContext()));
     }
 
     public static class FieldBindObject {
-        @BindRes(123)
+        @BindString(123)
         String stringResInt;
 
-        @BindRes(resName = "Error")
+        @BindString(resName = "Error")
         String stringResName;
     }
 

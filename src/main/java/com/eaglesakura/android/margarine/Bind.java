@@ -1,30 +1,28 @@
 package com.eaglesakura.android.margarine;
 
-import android.support.annotation.IdRes;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Method set
+ * View Injection
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
-public @interface OnCheckedChange {
+@Target({ElementType.FIELD})
+public @interface Bind {
     /**
      * R.id.**
      */
-    @IdRes int[] value() default {};
+    int value() default 0;
 
     /**
      * R.id."resName"
      */
-    String[] resName() default {};
+    String resName() default "";
 
     /**
      * BinderClass
      */
-    Class binder() default MethodBinder.OnCheckedChangeBinder.class;
+    Class binder() default FieldBinder.ViewFieldBinder.class;
 }

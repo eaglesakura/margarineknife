@@ -33,7 +33,7 @@ public class BindAndroidTest extends ModuleTestCase {
     public void test_アノテーションにバインドを行う() {
         View view = View.inflate(getContext(), com.eaglesakura.android.margarine.test.R.layout.view_bindtest, null);
         BindTarget dst = new BindTarget();
-        MargarineKnife.bind(view, dst);
+        MargarineKnife.bind(dst, view);
 
         // Bindを確認
         assertNotNull(dst.mView);
@@ -70,22 +70,22 @@ public class BindAndroidTest extends ModuleTestCase {
 
         boolean mLongClicked;
 
-        @BindRes(resName = "BindTest.View")
+        @Bind(resName = "BindTest.View")
         View mView;
 
-        @BindRes(resName = "BindTest.TextView")
+        @Bind(resName = "BindTest.TextView")
         TextView mTextView;
 
-        @BindRes(resName = "BindTest.FrameLayout")
+        @Bind(resName = "BindTest.FrameLayout")
         FrameLayout mFrameLayout;
 
-        @BindRes(resName = "BindTest.CheckBox")
+        @Bind(resName = "BindTest.CheckBox")
         CheckBox mCheckBox;
 
-        @BindRes(resName = "BindTest.Value.String")
+        @BindString(resName = "BindTest.Value.String")
         String mString;
 
-        @BindRes(resName = "BindTest.Value.Integer")
+        @BindInt(resName = "BindTest.Value.Integer")
         int mInt;
 
         @OnClick(resName = "BindTest.View")
@@ -101,7 +101,7 @@ public class BindAndroidTest extends ModuleTestCase {
             return true;
         }
 
-        @OnCheckedChange(resName = "BindTest.CheckBox")
+        @OnCheckedChanged(resName = "BindTest.CheckBox")
         void checkedChange(CompoundButton button, boolean isChecked) {
             LogUtil.log("checkedChange(CompoundButton button, boolean isChecked)");
             mChecked = isChecked;
