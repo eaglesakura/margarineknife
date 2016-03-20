@@ -26,14 +26,14 @@ public class MargarineKnife {
         bind(dialog, dialog);
     }
 
-    public static void bind(Object src, Object dst) {
-        bind(InjectionClass.get(src.getClass()), src, InjectionClass.get(dst.getClass()), dst);
+    public static void bind(Object dst, Object src) {
+        bind(InjectionClass.get(dst.getClass()), dst, InjectionClass.get(src.getClass()), src);
     }
 
     /**
      * データを注入する
      */
-    public static void bind(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) {
+    public static void bind(InjectionClass dstClass, Object dst, InjectionClass srcClass, Object src) {
         Context context = srcClass.getContext(src);
 
         for (FieldBinder field : dstClass.listBindFields(context)) {

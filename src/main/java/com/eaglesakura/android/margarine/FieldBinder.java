@@ -3,127 +3,112 @@ package com.eaglesakura.android.margarine;
 import android.content.Context;
 import android.view.View;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
 /**
  * 書き込み対象のメンバ変数を構築する
  */
-public class FieldBinder {
+public abstract class FieldBinder {
     /**
      * 書き込み対象メンバ変数
      */
     final Field mField;
 
     /**
-     * バインド対象
-     */
-    final BindRes mBind;
-
-    /**
      * Res Id
      */
     final int mResourceId;
 
-    enum BindType {
-        StringRes {
-            @Override
-            String getResourceType() {
-                return "string";
-            }
-
-            @Override
-            void setValue(Field field, Object dst, Object value) throws Exception {
-                field.set(dst, value);
-            }
-
-            @Override
-            Object getValue(InjectionClass clazz, Object src, int resId) {
-                return clazz.getStringRes(src, resId);
-            }
-        },
-        IntegerRes {
-            @Override
-            String getResourceType() {
-                return "integer";
-            }
-
-            @Override
-            void setValue(Field field, Object dst, Object value) throws Exception {
-                field.setInt(dst, (Integer) value);
-            }
-
-            @Override
-            Object getValue(InjectionClass clazz, Object src, int resId) {
-                return clazz.getIntRes(src, resId);
-            }
-        },
-        View {
-            @Override
-            String getResourceType() {
-                return "id";
-            }
-
-            @Override
-            void setValue(Field field, Object dst, Object value) throws Exception {
-                field.set(dst, value);
-            }
-
-            @Override
-            Object getValue(InjectionClass clazz, Object src, int resId) {
-                return clazz.findView(src, resId);
-            }
-        };
-
-        abstract String getResourceType();
-
-        abstract void setValue(Field field, Object dst, Object value) throws Exception;
-
-        abstract Object getValue(InjectionClass clazz, Object src, int resId);
-    }
-
-    final BindType mType;
-
-    public FieldBinder(Context context, Field field) {
+    public FieldBinder(Context context, Field field, Class annotationClass, String identifierType) {
         mField = field;
-        mBind = field.getAnnotation(BindRes.class);
-
-        // Classを特定する
-        final Class<?> DST_TYPE = field.getType();
-        if (DST_TYPE.equals(String.class)) {
-            mType = BindType.StringRes;
-        } else if (DST_TYPE.equals(int.class)) {
-            mType = BindType.IntegerRes;
-        } else if (DST_TYPE.asSubclass(View.class) != null) {
-            mType = BindType.View;
-        } else {
-            throw new Error("Bind Error :: " + DST_TYPE);
-        }
-
-        // ResourceIdを特定する
-        if (mBind.value() != 0) {
-            mResourceId = mBind.value();
-        } else {
-            mResourceId = context.getResources().getIdentifier(mBind.resName(), mType.getResourceType(), context.getPackageName());
-            if (mResourceId == 0) {
-                throw new Error("ResourceName Error :: " + mBind.resName());
-            }
-        }
-    }
-
-    /**
-     * Viewを書き込む
-     */
-    public void apply(InjectionClass srcClass, Object src, Object dst) {
         if (!mField.isAccessible()) {
             mField.setAccessible(true);
         }
 
         try {
-            Object value = mType.getValue(srcClass, src, mResourceId);
-            mType.setValue(mField, dst, value);
+            Annotation annotation = field.getAnnotation(annotationClass);
+
+            final int intResId = (Integer) annotation.getClass().getMethod("value").invoke(annotation);
+            final String resName = (String) annotation.getClass().getMethod("resName").invoke(annotation);
+
+            if (intResId != 0) {
+                mResourceId = intResId;
+            } else {
+                mResourceId = context.getResources().getIdentifier(resName, identifierType, context.getPackageName());
+                if (mResourceId == 0) {
+                    throw new ResourceBindError("ResourceName Error :: " + resName);
+                }
+            }
         } catch (Exception e) {
-            throw new Error(e);
+            throw new ResourceBindError(e);
         }
     }
 
+    /**
+     * 値を書き込む
+     */
+    public void apply(InjectionClass srcClass, Object src, Object dst) {
+
+        try {
+            onApply(srcClass, src, dst);
+        } catch (Exception e) {
+            throw new ResourceBindError(e);
+        }
+    }
+
+    /**
+     * 値を実際に書き込む
+     */
+    protected abstract void onApply(InjectionClass srcClass, Object src, Object dst) throws Exception;
+
+
+    public static class ViewFieldBinder extends FieldBinder {
+        public ViewFieldBinder(Context context, Field field, Class annotationClass) {
+            super(context, field, annotationClass, "id");
+            valid(View.class);
+        }
+
+        @Override
+        protected void onApply(InjectionClass srcClass, Object src, Object dst) throws Exception {
+            mField.set(dst, srcClass.findView(src, mResourceId));
+        }
+    }
+
+    public static class StringFieldBinder extends FieldBinder {
+        public StringFieldBinder(Context context, Field field, Class annotationClass) {
+            super(context, field, annotationClass, "string");
+            valid(String.class);
+        }
+
+        @Override
+        protected void onApply(InjectionClass srcClass, Object src, Object dst) throws Exception {
+            mField.set(dst, srcClass.getStringRes(src, mResourceId));
+        }
+    }
+
+    public static class IntegerFieldBinder extends FieldBinder {
+        public IntegerFieldBinder(Context context, Field field, Class annotationClass) {
+            super(context, field, annotationClass, "integer");
+            valid(int.class);
+        }
+
+        @Override
+        protected void onApply(InjectionClass srcClass, Object src, Object dst) throws Exception {
+            mField.setInt(dst, srcClass.getIntRes(src, mResourceId));
+        }
+    }
+
+    void valid(Class checkType) {
+        Class<?> fieldType = mField.getType();
+        if (fieldType.equals(checkType)) {
+            return;
+        }
+
+        if (fieldType.asSubclass(checkType) != null) {
+            return;
+        }
+
+        throw new ResourceBindError(checkType.getSimpleName() + " != " + fieldType.getSimpleName());
+    }
 }

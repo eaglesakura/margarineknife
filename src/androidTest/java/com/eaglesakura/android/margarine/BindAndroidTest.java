@@ -27,13 +27,13 @@ public class BindAndroidTest extends ModuleTestCase {
         List<MethodBinder> binders = target.listBindMethods(getContext());
 
         assertNotNull(binders);
-        assertEquals(binders.size(), 2);
+        assertEquals(binders.size(), 3);
     }
 
     public void test_アノテーションにバインドを行う() {
         View view = View.inflate(getContext(), com.eaglesakura.android.margarine.test.R.layout.view_bindtest, null);
         BindTarget dst = new BindTarget();
-        MargarineKnife.bind(view, dst);
+        MargarineKnife.bind(dst, view);
 
         // Bindを確認
         assertNotNull(dst.mView);
@@ -48,17 +48,53 @@ public class BindAndroidTest extends ModuleTestCase {
         assertNotNull(dst.mCheckBox);
         assertEquals(dst.mCheckBox.getId(), com.eaglesakura.android.margarine.test.R.id.BindTest_CheckBox);
 
-        assertEquals(dst.mString, getContext().getString(R.string.BindTest_Value_String));
-        assertEquals(dst.mInt, getContext().getResources().getInteger(R.integer.BindTest_Value_Integer));
+        assertEquals(dst.mString, getContext().getString(com.eaglesakura.android.margarine.test.R.string.BindTest_Value_String));
+        assertEquals(dst.mInt, getContext().getResources().getInteger(com.eaglesakura.android.margarine.test.R.integer.BindTest_Value_Integer));
 
         // コールバックを確認
         assertFalse(dst.mClickedView);
         dst.mView.callOnClick();
+        dst.mView.performLongClick();
         assertTrue(dst.mClickedView);
+        assertTrue(dst.mLongClicked);
 
         assertFalse(dst.mChecked);
         dst.mCheckBox.setChecked(true);
         assertTrue(dst.mChecked);
+    }
+
+    public void test_Viewバインドに失敗する() throws Exception {
+        try {
+            View view = View.inflate(getContext(), com.eaglesakura.android.margarine.test.R.layout.view_bindtest, null);
+            MargarineKnife.bind(new ViewBindError(), view);
+
+            fail();
+        } catch (MethodBindError e) {
+            LogUtil.log(e.getMessage());
+        }
+    }
+
+    public void test_CheckedChangeバインドに失敗する() throws Exception {
+        try {
+            View view = View.inflate(getContext(), com.eaglesakura.android.margarine.test.R.layout.view_bindtest, null);
+            MargarineKnife.bind(new CheckedChangeBindError(), view);
+
+            fail();
+        } catch (MethodBindError e) {
+            LogUtil.log(e.getMessage());
+        }
+    }
+
+    class ViewBindError {
+        @OnClick(resName = "BindTest.View")
+        void clickView(int dummy) {
+        }
+    }
+
+    class CheckedChangeBindError {
+        @OnCheckedChanged(resName = "BindTest.CheckBox")
+        void clickView(CompoundButton view) {
+        }
     }
 
     class BindTarget {
@@ -66,22 +102,24 @@ public class BindAndroidTest extends ModuleTestCase {
 
         boolean mChecked;
 
-        @BindRes(resName = "BindTest.View")
+        boolean mLongClicked;
+
+        @Bind(resName = "BindTest.View")
         View mView;
 
-        @BindRes(resName = "BindTest.TextView")
+        @Bind(resName = "BindTest.TextView")
         TextView mTextView;
 
-        @BindRes(resName = "BindTest.FrameLayout")
+        @Bind(resName = "BindTest.FrameLayout")
         FrameLayout mFrameLayout;
 
-        @BindRes(resName = "BindTest.CheckBox")
+        @Bind(resName = "BindTest.CheckBox")
         CheckBox mCheckBox;
 
-        @BindRes(resName = "BindTest.Value.String")
+        @BindString(resName = "BindTest.Value.String")
         String mString;
 
-        @BindRes(resName = "BindTest.Value.Integer")
+        @BindInt(resName = "BindTest.Value.Integer")
         int mInt;
 
         @OnClick(resName = "BindTest.View")
@@ -90,10 +128,18 @@ public class BindAndroidTest extends ModuleTestCase {
             mClickedView = true;
         }
 
-        @OnCheckedChange(resName = "BindTest.CheckBox")
-        void checkedChange(CompoundButton button, boolean isChecked) {
+        @OnLongClick(resName = "BindTest.View")
+        boolean longClickView(View view) {
+            LogUtil.log("longClickView(View view)");
+            mLongClicked = true;
+            return true;
+        }
+
+        @OnCheckedChanged(resName = "BindTest.CheckBox")
+        void checkedChange(boolean isChecked) {
             LogUtil.log("checkedChange(CompoundButton button, boolean isChecked)");
             mChecked = isChecked;
         }
+
     }
 }

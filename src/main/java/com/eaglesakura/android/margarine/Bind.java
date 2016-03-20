@@ -8,23 +8,23 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Method set
+ * View Injection
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
-public @interface OnClick {
+@Target({ElementType.FIELD})
+public @interface Bind {
     /**
      * R.id.**
      */
-    @IdRes int[] value() default {};
+    @IdRes int value() default 0;
 
     /**
      * R.id."resName"
      */
-    String[] resName() default {};
+    String resName() default "";
 
     /**
      * BinderClass
      */
-    Class binder() default MethodBinder.OnClickBinder.class;
+    Class binder() default FieldBinder.ViewFieldBinder.class;
 }

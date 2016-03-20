@@ -27,15 +27,28 @@ public class InjectionClass {
         mClass = clazz;
     }
 
+    private void addBindFields(Context context, Class<? extends Annotation> annotationClass) throws Exception {
+        List<Field> fields = InternalUtils.listAnnotationFields(mClass, annotationClass);
+        for (Field field : fields) {
+            Annotation annotation = field.getAnnotation(annotationClass);
+            Class binderClass = (Class) annotationClass.getMethod("binder").invoke(annotation);
+            Constructor constructor = binderClass.getDeclaredConstructor(Context.class, Field.class, Class.class);
+            mBindFields.add((FieldBinder) constructor.newInstance(context, field, annotationClass));
+        }
+    }
+
     /**
      * Injection対象のField一覧を取得する
      */
     public List<FieldBinder> listBindFields(Context context) {
         if (mBindFields == null) {
-            List<Field> fields = InternalUtils.listAnnotationFields(mClass, BindRes.class);
-            mBindFields = new ArrayList<>(fields.size());
-            for (Field field : fields) {
-                mBindFields.add(new FieldBinder(context, field));
+            mBindFields = new ArrayList<>();
+            try {
+                addBindFields(context, Bind.class);
+                addBindFields(context, BindInt.class);
+                addBindFields(context, BindString .class);
+            } catch (Exception e) {
+                throw new ResourceBindError(e);
             }
         }
 
@@ -58,9 +71,10 @@ public class InjectionClass {
 
             try {
                 addBindMethods(context, OnClick.class);
-                addBindMethods(context, OnCheckedChange.class);
+                addBindMethods(context, OnCheckedChanged.class);
+                addBindMethods(context, OnLongClick.class);
             } catch (Exception e) {
-                throw new Error(e);
+                throw new MethodBindError(e);
             }
         }
 
@@ -68,8 +82,8 @@ public class InjectionClass {
     }
 
     public Context getContext(Object src) {
-        if (src instanceof Activity) {
-            return (Activity) src;
+        if (src instanceof Context) {
+            return (Context) src;
         } else if (src instanceof Fragment) {
             return ((Fragment) src).getContext();
         } else if ((src instanceof View)) {
@@ -106,13 +120,26 @@ public class InjectionClass {
 
     static final Map<Class, InjectionClass> sCaches = new HashMap<>();
 
-    public synchronized static InjectionClass get(Class clazz) {
-        InjectionClass aClass = sCaches.get(clazz);
-        if (aClass == null) {
-            aClass = new InjectionClass(clazz);
-            sCaches.put(clazz, aClass);
+    /**
+     * Injection用クラスをキャッシュから取得する
+     */
+    public static InjectionClass get(Class clazz) {
+        synchronized (sCaches) {
+            InjectionClass aClass = sCaches.get(clazz);
+            if (aClass == null) {
+                aClass = new InjectionClass(clazz);
+                sCaches.put(clazz, aClass);
+            }
+            return aClass;
         }
+    }
 
-        return aClass;
+    /**
+     * Injection用クラスのキャッシュを削除する
+     */
+    public synchronized static void clearCaches() {
+        synchronized (sCaches) {
+            sCaches.clear();
+        }
     }
 }

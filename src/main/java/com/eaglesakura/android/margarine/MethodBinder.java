@@ -14,6 +14,11 @@ public abstract class MethodBinder {
 
     protected final Method mMethod;
 
+    /**
+     * Viewを第1引数として含める場合はtrue
+     */
+    protected final boolean mViewParameterRequire;
+
     protected int[] mViewIdList;
 
     public MethodBinder(Context context, Method method, Class annotationClass) {
@@ -21,6 +26,17 @@ public abstract class MethodBinder {
             mMethod = method;
             if (!mMethod.isAccessible()) {
                 mMethod.setAccessible(true);
+            }
+
+            {
+                Class<?>[] types = mMethod.getParameterTypes();
+                if (types == null || types.length == 0 || types[0].isPrimitive()) {
+                    mViewParameterRequire = false;
+                } else if (types[0].asSubclass(View.class) != null) {
+                    mViewParameterRequire = true;
+                } else {
+                    mViewParameterRequire = false;
+                }
             }
 
             Annotation annotation = mMethod.getAnnotation(annotationClass);
@@ -47,7 +63,7 @@ public abstract class MethodBinder {
                 }
             }
         } catch (Exception e) {
-            throw new Error(e);
+            throw new MethodBindError(e);
         }
     }
 
@@ -62,9 +78,9 @@ public abstract class MethodBinder {
 
     public abstract void bind(Object dst, View view);
 
-    protected void invoke(Object dst, Object... args) {
+    protected Object invoke(Object dst, Object... args) {
         try {
-            mMethod.invoke(dst, args);
+            return mMethod.invoke(dst, args);
         } catch (InvocationTargetException e) {
             throw new Error(e);
         } catch (Exception e) {
@@ -78,12 +94,38 @@ public abstract class MethodBinder {
     public static class OnClickBinder extends MethodBinder {
         public OnClickBinder(Context context, Method method, Class<? extends Annotation> annotationClass) {
             super(context, method, annotationClass);
+            valid();
         }
 
         @Override
         public void bind(Object dst, View view) {
             view.setOnClickListener(it -> {
-                invoke(dst, view);
+                if (mViewParameterRequire) {
+                    invoke(dst, view);
+                } else {
+                    invoke(dst);
+                }
+            });
+        }
+    }
+
+    /**
+     *
+     */
+    public static class OnLongClickBinder extends MethodBinder {
+        public OnLongClickBinder(Context context, Method method, Class annotationClass) {
+            super(context, method, annotationClass);
+            valid();
+        }
+
+        @Override
+        public void bind(Object dst, View view) {
+            view.setOnLongClickListener(it -> {
+                if (mViewParameterRequire) {
+                    return (Boolean) invoke(dst, it);
+                } else {
+                    return (Boolean) invoke(dst);
+                }
             });
         }
     }
@@ -94,13 +136,54 @@ public abstract class MethodBinder {
     public static class OnCheckedChangeBinder extends MethodBinder {
         public OnCheckedChangeBinder(Context context, Method method, Class<? extends Annotation> annotationClass) {
             super(context, method, annotationClass);
+            valid(boolean.class);
         }
 
         @Override
         public void bind(Object dst, View view) {
             ((CompoundButton) view).setOnCheckedChangeListener((it, isChecked) -> {
-                invoke(dst, it, isChecked);
+                if (mViewParameterRequire) {
+                    invoke(dst, it, isChecked);
+                } else {
+                    invoke(dst, isChecked);
+                }
             });
+        }
+    }
+
+    String toArgMessages(Object... args) {
+        String result = " ";
+        for (Object arg : args) {
+            result += (" " + arg.toString());
+        }
+        return result;
+    }
+
+    void valid(Object... args) {
+        Class<?>[] parameterTypes = mMethod.getParameterTypes();
+
+        int paramIndex;
+        if (mViewParameterRequire) {
+            if ((parameterTypes.length - 1) != args.length) {
+                throw new MethodBindError("parameter req(" + toArgMessages(args) + " ) method(" + toArgMessages(parameterTypes) + " )");
+            }
+            paramIndex = 1;
+        } else {
+            if (parameterTypes.length != args.length) {
+                throw new MethodBindError("parameter req(" + toArgMessages(args) + " ) method(" + toArgMessages(parameterTypes) + " )");
+            }
+            paramIndex = 0;
+        }
+
+        for (int i = 0; i < args.length; ++i) {
+            Object reqArg = args[i];
+            Object param = parameterTypes[paramIndex];
+
+            if (!param.equals(reqArg)) {
+                throw new MethodBindError("Param Error :: " + reqArg.toString() + " != " + param.toString());
+            }
+
+            ++paramIndex;
         }
     }
 }

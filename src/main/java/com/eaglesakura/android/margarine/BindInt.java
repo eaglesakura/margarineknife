@@ -1,6 +1,6 @@
 package com.eaglesakura.android.margarine;
 
-import android.support.annotation.IdRes;
+import android.support.annotation.IntegerRes;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -8,23 +8,23 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Method set
+ *
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
-public @interface OnClick {
+@Target({ElementType.FIELD})
+public @interface BindInt {
     /**
-     * R.id.**
+     * R.integer.**
      */
-    @IdRes int[] value() default {};
+    @IntegerRes int value() default 0;
 
     /**
-     * R.id."resName"
+     * R.integer."resName"
      */
-    String[] resName() default {};
+    String resName() default "";
 
     /**
      * BinderClass
      */
-    Class binder() default MethodBinder.OnClickBinder.class;
+    Class binder() default FieldBinder.IntegerFieldBinder.class;
 }

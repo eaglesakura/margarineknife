@@ -8,11 +8,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * OnCliick Listener
+ * Method set
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
-public @interface OnCheckedChange {
+public @interface OnLongClick {
     /**
      * R.id.**
      */
@@ -26,5 +26,5 @@ public @interface OnCheckedChange {
     /**
      * BinderClass
      */
-    Class binder() default MethodBinder.OnCheckedChangeBinder.class;
+    Class binder() default MethodBinder.OnLongClickBinder.class;
 }
