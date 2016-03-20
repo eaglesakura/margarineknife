@@ -1,23 +1,25 @@
 package com.eaglesakura.android.margarine;
 
+import android.support.annotation.StringRes;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * View Injection
+ * Injection
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})
 public @interface BindString {
     /**
-     * R.id.**
+     * R.string.**
      */
-    int value() default 0;
+    @StringRes int value() default 0;
 
     /**
-     * R.id."resName"
+     * R.string."resName"
      */
     String resName() default "";
 
