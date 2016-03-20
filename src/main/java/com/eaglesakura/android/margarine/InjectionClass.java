@@ -59,8 +59,9 @@ public class InjectionClass {
             try {
                 addBindMethods(context, OnClick.class);
                 addBindMethods(context, OnCheckedChange.class);
+                addBindMethods(context, OnLongClick.class);
             } catch (Exception e) {
-                throw new Error(e);
+                throw new MethodBindError(e);
             }
         }
 
@@ -68,8 +69,8 @@ public class InjectionClass {
     }
 
     public Context getContext(Object src) {
-        if (src instanceof Activity) {
-            return (Activity) src;
+        if (src instanceof Context) {
+            return (Context) src;
         } else if (src instanceof Fragment) {
             return ((Fragment) src).getContext();
         } else if ((src instanceof View)) {
@@ -106,13 +107,26 @@ public class InjectionClass {
 
     static final Map<Class, InjectionClass> sCaches = new HashMap<>();
 
-    public synchronized static InjectionClass get(Class clazz) {
-        InjectionClass aClass = sCaches.get(clazz);
-        if (aClass == null) {
-            aClass = new InjectionClass(clazz);
-            sCaches.put(clazz, aClass);
+    /**
+     * Injection用クラスをキャッシュから取得する
+     */
+    public static InjectionClass get(Class clazz) {
+        synchronized (sCaches) {
+            InjectionClass aClass = sCaches.get(clazz);
+            if (aClass == null) {
+                aClass = new InjectionClass(clazz);
+                sCaches.put(clazz, aClass);
+            }
+            return aClass;
         }
+    }
 
-        return aClass;
+    /**
+     * Injection用クラスのキャッシュを削除する
+     */
+    public synchronized static void clearCaches() {
+        synchronized (sCaches) {
+            sCaches.clear();
+        }
     }
 }

@@ -47,7 +47,7 @@ public abstract class MethodBinder {
                 }
             }
         } catch (Exception e) {
-            throw new Error(e);
+            throw new MethodBindError(e);
         }
     }
 
@@ -62,9 +62,9 @@ public abstract class MethodBinder {
 
     public abstract void bind(Object dst, View view);
 
-    protected void invoke(Object dst, Object... args) {
+    protected Object invoke(Object dst, Object... args) {
         try {
-            mMethod.invoke(dst, args);
+            return mMethod.invoke(dst, args);
         } catch (InvocationTargetException e) {
             throw new Error(e);
         } catch (Exception e) {
@@ -85,6 +85,20 @@ public abstract class MethodBinder {
             view.setOnClickListener(it -> {
                 invoke(dst, view);
             });
+        }
+    }
+
+    /**
+     *
+     */
+    public static class OnLongClickBinder extends MethodBinder {
+        public OnLongClickBinder(Context context, Method method, Class annotationClass) {
+            super(context, method, annotationClass);
+        }
+
+        @Override
+        public void bind(Object dst, View view) {
+            view.setOnLongClickListener(it -> (Boolean) invoke(dst, it));
         }
     }
 

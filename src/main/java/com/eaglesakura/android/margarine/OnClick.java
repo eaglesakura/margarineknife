@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * OnCliick Listener
+ * Method set
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})

@@ -27,7 +27,7 @@ public class BindAndroidTest extends ModuleTestCase {
         List<MethodBinder> binders = target.listBindMethods(getContext());
 
         assertNotNull(binders);
-        assertEquals(binders.size(), 2);
+        assertEquals(binders.size(), 3);
     }
 
     public void test_アノテーションにバインドを行う() {
@@ -48,13 +48,15 @@ public class BindAndroidTest extends ModuleTestCase {
         assertNotNull(dst.mCheckBox);
         assertEquals(dst.mCheckBox.getId(), com.eaglesakura.android.margarine.test.R.id.BindTest_CheckBox);
 
-        assertEquals(dst.mString, getContext().getString(R.string.BindTest_Value_String));
-        assertEquals(dst.mInt, getContext().getResources().getInteger(R.integer.BindTest_Value_Integer));
+        assertEquals(dst.mString, getContext().getString(com.eaglesakura.android.margarine.test.R.string.BindTest_Value_String));
+        assertEquals(dst.mInt, getContext().getResources().getInteger(com.eaglesakura.android.margarine.test.R.integer.BindTest_Value_Integer));
 
         // コールバックを確認
         assertFalse(dst.mClickedView);
         dst.mView.callOnClick();
+        dst.mView.performLongClick();
         assertTrue(dst.mClickedView);
+        assertTrue(dst.mLongClicked);
 
         assertFalse(dst.mChecked);
         dst.mCheckBox.setChecked(true);
@@ -65,6 +67,8 @@ public class BindAndroidTest extends ModuleTestCase {
         boolean mClickedView;
 
         boolean mChecked;
+
+        boolean mLongClicked;
 
         @BindRes(resName = "BindTest.View")
         View mView;
@@ -90,10 +94,18 @@ public class BindAndroidTest extends ModuleTestCase {
             mClickedView = true;
         }
 
+        @OnLongClick(resName = "BindTest.View")
+        boolean longClickView(View view) {
+            LogUtil.log("longClickView(View view)");
+            mLongClicked = true;
+            return true;
+        }
+
         @OnCheckedChange(resName = "BindTest.CheckBox")
         void checkedChange(CompoundButton button, boolean isChecked) {
             LogUtil.log("checkedChange(CompoundButton button, boolean isChecked)");
             mChecked = isChecked;
         }
+
     }
 }

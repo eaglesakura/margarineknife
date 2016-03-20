@@ -96,7 +96,7 @@ public class FieldBinder {
         } else if (DST_TYPE.asSubclass(View.class) != null) {
             mType = BindType.View;
         } else {
-            throw new Error("Bind Error :: " + DST_TYPE);
+            throw new ResourceBindError("Bind Error :: " + DST_TYPE);
         }
 
         // ResourceIdを特定する
@@ -105,7 +105,7 @@ public class FieldBinder {
         } else {
             mResourceId = context.getResources().getIdentifier(mBind.resName(), mType.getResourceType(), context.getPackageName());
             if (mResourceId == 0) {
-                throw new Error("ResourceName Error :: " + mBind.resName());
+                throw new ResourceBindError("ResourceName Error :: " + mBind.resName());
             }
         }
     }
@@ -122,7 +122,7 @@ public class FieldBinder {
             Object value = mType.getValue(srcClass, src, mResourceId);
             mType.setValue(mField, dst, value);
         } catch (Exception e) {
-            throw new Error(e);
+            throw new ResourceBindError(e);
         }
     }
 
