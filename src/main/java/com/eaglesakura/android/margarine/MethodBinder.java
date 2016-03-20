@@ -14,6 +14,11 @@ public abstract class MethodBinder {
 
     protected final Method mMethod;
 
+    /**
+     * Viewを第1引数として含める場合はtrue
+     */
+    protected final boolean mViewParameterRequire;
+
     protected int[] mViewIdList;
 
     public MethodBinder(Context context, Method method, Class annotationClass) {
@@ -21,6 +26,17 @@ public abstract class MethodBinder {
             mMethod = method;
             if (!mMethod.isAccessible()) {
                 mMethod.setAccessible(true);
+            }
+
+            {
+                Class<?>[] types = mMethod.getParameterTypes();
+                if (types == null || types.length == 0 || types[0].isPrimitive()) {
+                    mViewParameterRequire = false;
+                } else if (types[0].asSubclass(View.class) != null) {
+                    mViewParameterRequire = true;
+                } else {
+                    mViewParameterRequire = false;
+                }
             }
 
             Annotation annotation = mMethod.getAnnotation(annotationClass);
@@ -83,7 +99,11 @@ public abstract class MethodBinder {
         @Override
         public void bind(Object dst, View view) {
             view.setOnClickListener(it -> {
-                invoke(dst, view);
+                if (mViewParameterRequire) {
+                    invoke(dst, view);
+                } else {
+                    invoke(dst);
+                }
             });
         }
     }
@@ -98,7 +118,13 @@ public abstract class MethodBinder {
 
         @Override
         public void bind(Object dst, View view) {
-            view.setOnLongClickListener(it -> (Boolean) invoke(dst, it));
+            view.setOnLongClickListener(it -> {
+                if (mViewParameterRequire) {
+                    return (Boolean) invoke(dst, it);
+                } else {
+                    return (Boolean) invoke(dst);
+                }
+            });
         }
     }
 
@@ -113,7 +139,11 @@ public abstract class MethodBinder {
         @Override
         public void bind(Object dst, View view) {
             ((CompoundButton) view).setOnCheckedChangeListener((it, isChecked) -> {
-                invoke(dst, it, isChecked);
+                if (mViewParameterRequire) {
+                    invoke(dst, it, isChecked);
+                } else {
+                    invoke(dst, isChecked);
+                }
             });
         }
     }

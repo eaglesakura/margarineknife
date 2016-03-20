@@ -22,6 +22,9 @@ public abstract class FieldBinder {
 
     public FieldBinder(Context context, Field field, Class annotationClass, String identifierType) {
         mField = field;
+        if (!mField.isAccessible()) {
+            mField.setAccessible(true);
+        }
 
         try {
             Annotation annotation = field.getAnnotation(annotationClass);
@@ -46,9 +49,6 @@ public abstract class FieldBinder {
      * 値を書き込む
      */
     public void apply(InjectionClass srcClass, Object src, Object dst) {
-        if (!mField.isAccessible()) {
-            mField.setAccessible(true);
-        }
 
         try {
             onApply(srcClass, src, dst);

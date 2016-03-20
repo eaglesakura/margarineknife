@@ -24,6 +24,11 @@ String stringRes;
 void  clickView(View view) {
   // do
 }
+
+@Click(R.id.View_Id)
+void  clickView(/* no view */) {
+  // do
+}
 ```
 
 ```
@@ -39,6 +44,10 @@ void  clickView(View view) {
   // do
 }
 
+@Click(R.id.View_Id)
+void  clickView(/* no view */) {
+  // do
+}
 ```
 
 ### Annotation(Lib Project)

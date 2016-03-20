@@ -102,7 +102,7 @@ public class BindAndroidTest extends ModuleTestCase {
         }
 
         @OnCheckedChanged(resName = "BindTest.CheckBox")
-        void checkedChange(CompoundButton button, boolean isChecked) {
+        void checkedChange(boolean isChecked) {
             LogUtil.log("checkedChange(CompoundButton button, boolean isChecked)");
             mChecked = isChecked;
         }
