@@ -94,6 +94,7 @@ public abstract class MethodBinder {
     public static class OnClickBinder extends MethodBinder {
         public OnClickBinder(Context context, Method method, Class<? extends Annotation> annotationClass) {
             super(context, method, annotationClass);
+            valid();
         }
 
         @Override
@@ -114,6 +115,7 @@ public abstract class MethodBinder {
     public static class OnLongClickBinder extends MethodBinder {
         public OnLongClickBinder(Context context, Method method, Class annotationClass) {
             super(context, method, annotationClass);
+            valid();
         }
 
         @Override
@@ -134,6 +136,7 @@ public abstract class MethodBinder {
     public static class OnCheckedChangeBinder extends MethodBinder {
         public OnCheckedChangeBinder(Context context, Method method, Class<? extends Annotation> annotationClass) {
             super(context, method, annotationClass);
+            valid(boolean.class);
         }
 
         @Override
@@ -145,6 +148,42 @@ public abstract class MethodBinder {
                     invoke(dst, isChecked);
                 }
             });
+        }
+    }
+
+    String toArgMessages(Object... args) {
+        String result = " ";
+        for (Object arg : args) {
+            result += (" " + arg.toString());
+        }
+        return result;
+    }
+
+    void valid(Object... args) {
+        Class<?>[] parameterTypes = mMethod.getParameterTypes();
+
+        int paramIndex;
+        if (mViewParameterRequire) {
+            if ((parameterTypes.length - 1) != args.length) {
+                throw new MethodBindError("parameter req(" + toArgMessages(args) + " ) method(" + toArgMessages(parameterTypes) + " )");
+            }
+            paramIndex = 1;
+        } else {
+            if (parameterTypes.length != args.length) {
+                throw new MethodBindError("parameter req(" + toArgMessages(args) + " ) method(" + toArgMessages(parameterTypes) + " )");
+            }
+            paramIndex = 0;
+        }
+
+        for (int i = 0; i < args.length; ++i) {
+            Object reqArg = args[i];
+            Object param = parameterTypes[paramIndex];
+
+            if (!param.equals(reqArg)) {
+                throw new MethodBindError("Param Error :: " + reqArg.toString() + " != " + param.toString());
+            }
+
+            ++paramIndex;
         }
     }
 }

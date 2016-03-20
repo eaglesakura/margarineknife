@@ -63,6 +63,40 @@ public class BindAndroidTest extends ModuleTestCase {
         assertTrue(dst.mChecked);
     }
 
+    public void test_Viewバインドに失敗する() throws Exception {
+        try {
+            View view = View.inflate(getContext(), com.eaglesakura.android.margarine.test.R.layout.view_bindtest, null);
+            MargarineKnife.bind(new ViewBindError(), view);
+
+            fail();
+        } catch (MethodBindError e) {
+            LogUtil.log(e.getMessage());
+        }
+    }
+
+    public void test_CheckedChangeバインドに失敗する() throws Exception {
+        try {
+            View view = View.inflate(getContext(), com.eaglesakura.android.margarine.test.R.layout.view_bindtest, null);
+            MargarineKnife.bind(new CheckedChangeBindError(), view);
+
+            fail();
+        } catch (MethodBindError e) {
+            LogUtil.log(e.getMessage());
+        }
+    }
+
+    class ViewBindError {
+        @OnClick(resName = "BindTest.View")
+        void clickView(int dummy) {
+        }
+    }
+
+    class CheckedChangeBindError {
+        @OnCheckedChanged(resName = "BindTest.CheckBox")
+        void clickView(CompoundButton view) {
+        }
+    }
+
     class BindTarget {
         boolean mClickedView;
 

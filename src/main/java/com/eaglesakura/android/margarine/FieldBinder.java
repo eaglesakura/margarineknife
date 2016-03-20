@@ -66,7 +66,7 @@ public abstract class FieldBinder {
     public static class ViewFieldBinder extends FieldBinder {
         public ViewFieldBinder(Context context, Field field, Class annotationClass) {
             super(context, field, annotationClass, "id");
-            valid(field.getType(), View.class);
+            valid(View.class);
         }
 
         @Override
@@ -78,7 +78,7 @@ public abstract class FieldBinder {
     public static class StringFieldBinder extends FieldBinder {
         public StringFieldBinder(Context context, Field field, Class annotationClass) {
             super(context, field, annotationClass, "string");
-            valid(field.getType(), String.class);
+            valid(String.class);
         }
 
         @Override
@@ -90,7 +90,7 @@ public abstract class FieldBinder {
     public static class IntegerFieldBinder extends FieldBinder {
         public IntegerFieldBinder(Context context, Field field, Class annotationClass) {
             super(context, field, annotationClass, "integer");
-            valid(field.getType(), int.class);
+            valid(int.class);
         }
 
         @Override
@@ -99,7 +99,8 @@ public abstract class FieldBinder {
         }
     }
 
-    void valid(Class fieldType, Class checkType) {
+    void valid(Class checkType) {
+        Class<?> fieldType = mField.getType();
         if (fieldType.equals(checkType)) {
             return;
         }
