@@ -6,6 +6,22 @@
  * 本家 Butter KnifeがAPTに方向転換を行ったため、純粋なRuntime Bind Libraryとして開発する
  * ライブラリプロジェクトでも利用できる
 
+## プロジェクト設定
+
+```
+// build.gradle
+
+repositories {
+    // add maven repository
+    maven { url "http://eaglesakura.github.io/maven/" }
+}
+
+dependencies {
+    // add library
+    compile 'com.eaglesakura:margarineknife:1.0.+'
+}
+```
+
 ## Butter Knifeからの移行
 
  * 基本的には引数やクラス名を合わせてあるので、importとクラス名書き換えでそのまま動作する
