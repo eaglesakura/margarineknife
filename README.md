@@ -78,7 +78,7 @@ ViewGroup mViewGroup;
 
 ```
 // MargarineKnife OK!
-@BindRes(resName = "View_Id")
+@Bind(resName = "View_Id")
 ViewGroup mViewGroup;
 
 
