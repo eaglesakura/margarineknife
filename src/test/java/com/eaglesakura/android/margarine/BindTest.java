@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import android.view.View;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 public class BindTest extends UnitTestCase {

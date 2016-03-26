@@ -112,6 +112,13 @@ public class InjectionClass {
         return mMethodBinders;
     }
 
+    private Method mGetContext;
+
+    /**
+     * Contextを得る
+     *
+     * Androidのシステムオブジェクト、もしくは引数なし"getContext()"メソッドを持っていれば値を取得できる。
+     */
     public Context getContext(Object src) {
         if (src instanceof Context) {
             return (Context) src;
@@ -121,6 +128,18 @@ public class InjectionClass {
             return ((View) src).getContext();
         } else if (src instanceof Dialog) {
             return ((Dialog) src).getContext();
+        }
+
+        try {
+            if (mGetContext == null) {
+                mGetContext = mClass.getMethod("getContext");
+            }
+
+            if (mGetContext != null) {
+                return (Context) mGetContext.invoke(src);
+            }
+        } catch (Exception e) {
+
         }
 
         return null;
