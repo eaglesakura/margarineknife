@@ -13,8 +13,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class InjectionClass {
     final Class mClass;
@@ -22,6 +24,35 @@ public class InjectionClass {
     List<FieldBinder> mBindFields;
 
     List<MethodBinder> mMethodBinders;
+
+    static final Set<Class<? extends Annotation>> sFieldAnnotations = new HashSet<>();
+
+    static final Set<Class<? extends Annotation>> sMethodAnnotations = new HashSet<>();
+
+    static {
+        sFieldAnnotations.add(Bind.class);
+        sFieldAnnotations.add(BindInt.class);
+        sFieldAnnotations.add(BindString.class);
+        sFieldAnnotations.add(BindStringArray.class);
+
+        sMethodAnnotations.add(OnClick.class);
+        sMethodAnnotations.add(OnCheckedChanged.class);
+        sMethodAnnotations.add(OnLongClick.class);
+    }
+
+    /**
+     * バインドに使用するAnnotationを追加する
+     */
+    public static void addFieldAnnotation(Class<? extends Annotation> clazz) {
+        sFieldAnnotations.add(clazz);
+    }
+
+    /**
+     * バインドに使用するAnnotationを追加する
+     */
+    public static void addMethodAnnotation(Class<? extends Annotation> clazz) {
+        sMethodAnnotations.add(clazz);
+    }
 
     public InjectionClass(Class clazz) {
         mClass = clazz;
@@ -44,9 +75,9 @@ public class InjectionClass {
         if (mBindFields == null) {
             mBindFields = new ArrayList<>();
             try {
-                addBindFields(context, Bind.class);
-                addBindFields(context, BindInt.class);
-                addBindFields(context, BindString .class);
+                for (Class<? extends Annotation> clazz : sFieldAnnotations) {
+                    addBindFields(context, clazz);
+                }
             } catch (Exception e) {
                 throw new ResourceBindError(e);
             }
@@ -70,9 +101,9 @@ public class InjectionClass {
             mMethodBinders = new ArrayList<>();
 
             try {
-                addBindMethods(context, OnClick.class);
-                addBindMethods(context, OnCheckedChanged.class);
-                addBindMethods(context, OnLongClick.class);
+                for (Class<? extends Annotation> clazz : sMethodAnnotations) {
+                    addBindMethods(context, clazz);
+                }
             } catch (Exception e) {
                 throw new MethodBindError(e);
             }
@@ -97,6 +128,10 @@ public class InjectionClass {
 
     public String getStringRes(Object src, int resId) {
         return getContext(src).getString(resId);
+    }
+
+    public String[] getStringArrayRes(Object src, int resId) {
+        return getContext(src).getResources().getStringArray(resId);
     }
 
     public int getIntRes(Object src, int resId) {

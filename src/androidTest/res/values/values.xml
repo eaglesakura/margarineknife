@@ -2,4 +2,10 @@
 <resources>
     <string name="BindTest.Value.String">this is string</string>
     <integer name="BindTest.Value.Integer">3103</integer>
+    <string-array name="BindTest_Array_Strings">
+        <item>value0</item>
+        <item>value1</item>
+        <item>value2</item>
+        <item>value3</item>
+    </string-array>
 </resources>

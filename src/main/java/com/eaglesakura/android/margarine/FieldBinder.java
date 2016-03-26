@@ -5,6 +5,7 @@ import android.view.View;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.Set;
 
 /**
  * 書き込み対象のメンバ変数を構築する
@@ -63,8 +64,8 @@ public abstract class FieldBinder {
     protected abstract void onApply(InjectionClass srcClass, Object src, Object dst) throws Exception;
 
 
-    public static class ViewFieldBinder extends FieldBinder {
-        public ViewFieldBinder(Context context, Field field, Class annotationClass) {
+    public static class FieldBinderView extends FieldBinder {
+        public FieldBinderView(Context context, Field field, Class annotationClass) {
             super(context, field, annotationClass, "id");
             valid(View.class);
         }
@@ -75,8 +76,11 @@ public abstract class FieldBinder {
         }
     }
 
-    public static class StringFieldBinder extends FieldBinder {
-        public StringFieldBinder(Context context, Field field, Class annotationClass) {
+    /**
+     * IDE対策のため、命名を変えておく
+     */
+    public static class FieldBinderString extends FieldBinder {
+        public FieldBinderString(Context context, Field field, Class annotationClass) {
             super(context, field, annotationClass, "string");
             valid(String.class);
         }
@@ -87,8 +91,8 @@ public abstract class FieldBinder {
         }
     }
 
-    public static class IntegerFieldBinder extends FieldBinder {
-        public IntegerFieldBinder(Context context, Field field, Class annotationClass) {
+    public static class FieldBinderInteger extends FieldBinder {
+        public FieldBinderInteger(Context context, Field field, Class annotationClass) {
             super(context, field, annotationClass, "integer");
             valid(int.class);
         }
@@ -96,6 +100,18 @@ public abstract class FieldBinder {
         @Override
         protected void onApply(InjectionClass srcClass, Object src, Object dst) throws Exception {
             mField.setInt(dst, srcClass.getIntRes(src, mResourceId));
+        }
+    }
+
+    public static class FieldBinderStringArray extends FieldBinder {
+        public FieldBinderStringArray(Context context, Field field, Class annotationClass) {
+            super(context, field, annotationClass, "array");
+            valid(String[].class);
+        }
+
+        @Override
+        protected void onApply(InjectionClass srcClass, Object src, Object dst) throws Exception {
+            mField.set(dst, srcClass.getStringArrayRes(src, mResourceId));
         }
     }
 

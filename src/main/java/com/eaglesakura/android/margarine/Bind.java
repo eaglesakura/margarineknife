@@ -26,5 +26,5 @@ public @interface Bind {
     /**
      * BinderClass
      */
-    Class binder() default FieldBinder.ViewFieldBinder.class;
+    Class binder() default FieldBinder.FieldBinderView.class;
 }

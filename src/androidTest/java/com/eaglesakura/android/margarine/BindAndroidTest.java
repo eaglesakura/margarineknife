@@ -10,6 +10,7 @@ import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import java.util.Arrays;
 import java.util.List;
 
 @SuppressLint("all")
@@ -19,7 +20,7 @@ public class BindAndroidTest extends ModuleTestCase {
         InjectionClass target = new InjectionClass(BindTarget.class);
         List<FieldBinder> fields = target.listBindFields(getContext());
         assertNotNull(fields);
-        assertEquals(fields.size(), 6);
+        assertEquals(fields.size(), 7);
     }
 
     public void test_Inject対象メソッド一覧を取得できる() throws Exception {
@@ -50,6 +51,7 @@ public class BindAndroidTest extends ModuleTestCase {
 
         assertEquals(dst.mString, getContext().getString(com.eaglesakura.android.margarine.test.R.string.BindTest_Value_String));
         assertEquals(dst.mInt, getContext().getResources().getInteger(com.eaglesakura.android.margarine.test.R.integer.BindTest_Value_Integer));
+        assertTrue(Arrays.equals(dst.mStrings, getContext().getResources().getStringArray(com.eaglesakura.android.margarine.test.R.array.BindTest_Array_Strings)));
 
         // コールバックを確認
         assertFalse(dst.mClickedView);
@@ -118,6 +120,9 @@ public class BindAndroidTest extends ModuleTestCase {
 
         @BindString(resName = "BindTest.Value.String")
         String mString;
+
+        @BindStringArray(resName = "BindTest_Array_Strings")
+        String[] mStrings;
 
         @BindInt(resName = "BindTest.Value.Integer")
         int mInt;
