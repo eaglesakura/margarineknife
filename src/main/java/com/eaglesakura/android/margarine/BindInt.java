@@ -26,5 +26,5 @@ public @interface BindInt {
     /**
      * BinderClass
      */
-    Class binder() default FieldBinder.IntegerFieldBinder.class;
+    Class binder() default FieldBinder.FieldBinderInteger.class;
 }

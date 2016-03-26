@@ -1,5 +1,6 @@
 package com.eaglesakura.android.margarine;
 
+import android.support.annotation.ArrayRes;
 import android.support.annotation.StringRes;
 
 import java.lang.annotation.ElementType;
@@ -12,11 +13,11 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})
-public @interface BindString {
+public @interface BindStringArray {
     /**
      * R.string.**
      */
-    @StringRes int value() default 0;
+    @ArrayRes int value() default 0;
 
     /**
      * R.string."resName"
@@ -26,5 +27,5 @@ public @interface BindString {
     /**
      * BinderClass
      */
-    Class binder() default FieldBinder.FieldBinderString.class;
+    Class binder() default FieldBinder.FieldBinderStringArray.class;
 }

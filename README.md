@@ -78,7 +78,7 @@ ViewGroup mViewGroup;
 
 ```
 // MargarineKnife OK!
-@BindRes(resName = "View_Id")
+@Bind(resName = "View_Id")
 ViewGroup mViewGroup;
 
 
@@ -119,7 +119,7 @@ ButterKnife.unbind(this);
 
 * アプリ等の成果物で権利情報を表示可能な場合
 	* 権利情報の表示を行う（行える）場合、MIT Licenseを使用してください。
-	* [MIT License](LICENSE-MIT.txt)
+	* [MIT License](LICENSE.txt)
 * 何らかの理由で権利情報を表示不可能な場合
 	* 何らかの事情によりライセンス表記を行えない場合、下記のライセンスで使用可能です。
 	* ライブラリ内で依存している別なライブラリについては、必ずそのライブラリのライセンスに従ってください。
