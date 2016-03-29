@@ -151,7 +151,7 @@ public abstract class MethodBinder {
         }
     }
 
-    String toArgMessages(Object... args) {
+    String toArgMessages(Object[] args) {
         String result = " ";
         for (Object arg : args) {
             result += (" " + arg.toString());

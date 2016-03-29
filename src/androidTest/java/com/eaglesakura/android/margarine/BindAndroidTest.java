@@ -72,7 +72,7 @@ public class BindAndroidTest extends ModuleTestCase {
 
             fail();
         } catch (MethodBindError e) {
-            LogUtil.log(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -83,7 +83,7 @@ public class BindAndroidTest extends ModuleTestCase {
 
             fail();
         } catch (MethodBindError e) {
-            LogUtil.log(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -129,20 +129,20 @@ public class BindAndroidTest extends ModuleTestCase {
 
         @OnClick(resName = "BindTest.View")
         void clickView(View view) {
-            LogUtil.log("clickView(View view)");
+            LogUtil.out(getClass().getSimpleName(), "clickView(View view)");
             mClickedView = true;
         }
 
         @OnLongClick(resName = "BindTest.View")
         boolean longClickView(View view) {
-            LogUtil.log("longClickView(View view)");
+            LogUtil.out(getClass().getSimpleName(), "longClickView(View view)");
             mLongClicked = true;
             return true;
         }
 
         @OnCheckedChanged(resName = "BindTest.CheckBox")
         void checkedChange(boolean isChecked) {
-            LogUtil.log("checkedChange(CompoundButton button, boolean isChecked)");
+            LogUtil.out(getClass().getSimpleName(), "checkedChange(CompoundButton button, boolean isChecked)");
             mChecked = isChecked;
         }
 
