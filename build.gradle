@@ -43,16 +43,12 @@ dependencies {
     compile "com.android.support:support-v4:${ANDROID_SUPPORT_LIB_VERSION}"
 
     if (EGLIBRARY_COMPILE_LOCAL) {
-//        compile project(":eglibrary:simple-utils")
-
         testCompile project(":eglibrary:android-unittest-support")
 
         androidTestCompile project(":eglibrary:android-simple-utils")
         androidTestCompile project(":eglibrary:android-thread")
         androidTestCompile project(":eglibrary:android-devicetest-support")
     } else {
-//        compile 'com.eaglesakura:android-simple-utils:1.+'
-
         testCompile 'com.eaglesakura:android-unittest-support:1.+'
 
         androidTestCompile 'com.eaglesakura:android-simple-utils:1.+'

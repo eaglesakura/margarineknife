@@ -1,10 +1,6 @@
 checkout:
   post:
     - chmod 755 ./gradlew
-    - chmod 755 ./script/circle-invalidate-cache.sh
-    - chmod 755 ./script/deploy.sh
-    - chmod 755 ./script/circle-maven-commit.sh
-    - chmod 755 ./script/test.sh
 machine:
   timezone:
     Asia/Tokyo
@@ -13,27 +9,23 @@ machine:
   environment:
     ANDROID_HOME: /home/ubuntu/android-sdk
     BUILD_CACHEDIR: /home/ubuntu/build-cache
-    GRADLE_OPTS: -Xmx4G -Dorg.gradle.daemon=true
-    JAVA_OPTS: -Dfile.encoding=UTF-8 -Xms1024m -Xmx4096m -XX:MaxPermSize=2048m
+    GRADLE_OPTS: -Xmx2G -Dorg.gradle.daemon=true
+    JAVA_OPTS: -Dfile.encoding=UTF-8 -Xms1024m -Xmx2048m -XX:MaxPermSize=2048m
 dependencies:
   cache_directories:
     - "/home/ubuntu/android-sdk"
     - "/home/ubuntu/build-cache"
   override:
-    - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/android-sdk-install-circle.sh)"
-    - ./script/circle-invalidate-cache.sh
-    - ./gradlew dependencies
+    - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/build-android-dependencies.sh)"
 test:
   override:
-    - ./script/test.sh
+    - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/build-test.sh)"
 deployment:
   canary:
     branch: /^v[0-9]\..*$/
     commands:
-      - git clone git@github.com:eaglesakura/maven.git
-      - ./script/deploy.sh
-      - ./script/circle-maven-commit.sh
+    - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/build-deploy-maven.sh)"
   develop:
     branch: develop
     commands:
-      - ./script/deploy.sh
+    - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/build-deploy-local.sh)"
