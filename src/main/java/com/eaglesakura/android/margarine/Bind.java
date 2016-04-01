@@ -27,4 +27,9 @@ public @interface Bind {
      * BinderClass
      */
     Class binder() default FieldResourceBinder.FieldBinderView.class;
+
+    /**
+     * Null許容する場合true
+     */
+    boolean nullable() default false;
 }

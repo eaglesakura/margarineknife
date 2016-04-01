@@ -4,6 +4,7 @@ import com.eaglesakura.android.devicetest.ModuleTestCase;
 import com.eaglesakura.util.LogUtil;
 
 import android.annotation.SuppressLint;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -29,6 +30,25 @@ public class BindAndroidTest extends ModuleTestCase {
 
         assertNotNull(binders);
         assertEquals(binders.size(), 3);
+    }
+
+    public void test_Nullable制約を加えられる() {
+        View view = View.inflate(getContext(), com.eaglesakura.android.margarine.test.R.layout.view_bindtest, null);
+        NullableBindTarget dst = new NullableBindTarget();
+        assertNull(dst.mView);
+        MargarineKnife.bind(dst, view);
+        assertNull(dst.mView);
+    }
+
+    public void test_Nullable制約無しではエラーになる() {
+        View view = View.inflate(getContext(), com.eaglesakura.android.margarine.test.R.layout.view_bindtest, null);
+        NullableBindTarget dst = new NullableBindTarget();
+        assertNull(dst.mView);
+        try {
+            MargarineKnife.bind(dst, view);
+            fail();
+        } catch (Error e) {
+        }
     }
 
     public void test_アノテーションにバインドを行う() {
@@ -97,6 +117,16 @@ public class BindAndroidTest extends ModuleTestCase {
         @OnCheckedChanged(resName = "BindTest.CheckBox")
         void clickView(CompoundButton view) {
         }
+    }
+
+    class NullableBindTarget {
+        @Bind(resName = "not_use", nullable = true)
+        View mView;
+    }
+
+    class NullableBindErrorTarget {
+        @Bind(resName = "not_use")
+        View mView;
     }
 
     class BindTarget {

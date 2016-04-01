@@ -1,6 +1,7 @@
 package com.eaglesakura.android.margarine;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.view.View;
 
 import java.lang.annotation.Annotation;
@@ -20,6 +21,12 @@ public abstract class FieldResourceBinder implements FieldBinder {
      */
     final int mResourceId;
 
+
+    /**
+     * NULLを認める場合はtrue
+     */
+    protected boolean mNullable;
+
     public FieldResourceBinder(Context context, Field field, Class annotationClass, String identifierType) {
         mField = field;
         if (!mField.isAccessible()) {
@@ -28,6 +35,10 @@ public abstract class FieldResourceBinder implements FieldBinder {
 
         try {
             Annotation annotation = field.getAnnotation(annotationClass);
+            try {
+                mNullable = (Boolean) annotation.getClass().getMethod("nullable").invoke(annotation);
+            } catch (Exception e) {
+            }
 
             final int intResId = (Integer) annotation.getClass().getMethod("value").invoke(annotation);
             final String resName = (String) annotation.getClass().getMethod("resName").invoke(annotation);
@@ -74,7 +85,17 @@ public abstract class FieldResourceBinder implements FieldBinder {
 
         @Override
         protected void onApply(InjectionClass srcClass, Object src, Object dst) throws Exception {
-            mField.set(dst, srcClass.findView(src, mResourceId));
+            try {
+                mField.set(dst, srcClass.findView(src, mResourceId));
+            } catch (Throwable e) {
+                if (mNullable) {
+                    // Nullを認めるため、何もしない
+                    mField.set(dst, null);
+                    return;
+                } else {
+                    throw e;
+                }
+            }
         }
     }
 

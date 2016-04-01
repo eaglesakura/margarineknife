@@ -25,4 +25,9 @@ public @interface BindInstance {
      * BinderClass
      */
     Class<? extends FieldBinder> binder() default FieldInstanceBinder.class;
+
+    /**
+     * Nullチェック
+     */
+    boolean nullable() default false;
 }

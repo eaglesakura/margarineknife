@@ -25,6 +25,11 @@ public class FieldInstanceBinder implements FieldBinder {
      */
     Constructor mConstructor;
 
+    /**
+     * nullを認める場合はtrue
+     */
+    boolean mNullable;
+
     public FieldInstanceBinder(Context context, Field field, Class annotationClass) {
         mField = field;
         if (!mField.isAccessible()) {
@@ -33,6 +38,10 @@ public class FieldInstanceBinder implements FieldBinder {
 
         try {
             Annotation annotation = field.getAnnotation(annotationClass);
+            try {
+                mNullable = (Boolean) annotation.getClass().getMethod("nullable").invoke(annotation);
+            } catch (Exception e) {
+            }
 
             Class instanceClass = InternalUtils.getClass((Class) annotation.getClass().getMethod("value").invoke(annotation));
             Class factoryClass = InternalUtils.getClass((Class) annotation.getClass().getMethod("factory").invoke(annotation));
@@ -52,18 +61,31 @@ public class FieldInstanceBinder implements FieldBinder {
         }
     }
 
+    public boolean isNonNull() {
+        return !mNullable;
+    }
+
+    public boolean isNullable() {
+        return mNullable;
+    }
+
     @Override
     public void apply(InjectionClass srcClass, Object src, Object dst) {
         try {
-
             if (mConstructor != null) {
                 mField.set(dst, mConstructor.newInstance());
             } else {
                 InjectionClass dstClass = InjectionClass.get(dst.getClass());
                 InjectionFactory factory = mFactory.newInstance();
                 Object instance = factory.newInstance(srcClass, src, dstClass, dst, mField);
+                if (instance == null && isNonNull()) {
+                    // NonNull制約でインスタンス生成に失敗した
+                    throw new InstanceCreateFailedException();
+                }
                 mField.set(dst, instance);
             }
+        } catch (RuntimeException e) {
+            throw e;
         } catch (Exception e) {
             throw new InstanceCreateFailedException(e);
         }

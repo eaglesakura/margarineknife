@@ -2,6 +2,8 @@ package com.eaglesakura.android.margarine;
 
 import org.junit.Test;
 
+import android.support.annotation.Nullable;
+
 import java.lang.reflect.Field;
 
 import static org.junit.Assert.*;
@@ -56,6 +58,24 @@ public class BindInstanceTest extends UnitTestCase {
         assertEquals(testInstance.obj.hello(), "Bonjour");
     }
 
+    @Test
+    public void ファクトリがnullを返却することを許容する() throws Exception {
+        NullFactoryInstanceCase testInstance = new NullFactoryInstanceCase();
+        assertNull(testInstance.obj);
+
+        MargarineKnife.bind(testInstance, this);
+        assertNull(testInstance.obj);
+    }
+
+    @Test(expected = InstanceCreateFailedException.class)
+    public void ファクトリがnullを返却することを許容しない() throws Exception {
+        NonNullFactoryInstanceCase testInstance = new NonNullFactoryInstanceCase();
+        assertNull(testInstance.obj);
+
+        MargarineKnife.bind(testInstance, this);
+        fail();
+    }
+
     public static class SayObject {
         public String hello() {
             return "hello";
@@ -87,6 +107,13 @@ public class BindInstanceTest extends UnitTestCase {
         }
     }
 
+    public static class SayNullFactory implements InjectionFactory<SayObject> {
+        @Override
+        public SayObject newInstance(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst, Field field) {
+            return null;
+        }
+    }
+
     public static class SayFactory2 implements InjectionFactory<SayObject> {
         @Override
         public SayObject newInstance(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst, Field field) {
@@ -106,6 +133,16 @@ public class BindInstanceTest extends UnitTestCase {
 
     public static class FactoryInstanceCase {
         @BindInstance(factory = SayFactory.class)
+        SayObject obj;
+    }
+
+    public static class NullFactoryInstanceCase {
+        @BindInstance(factory = SayNullFactory.class, nullable = true)
+        SayObject obj;
+    }
+
+    public static class NonNullFactoryInstanceCase {
+        @BindInstance(factory = SayNullFactory.class)
         SayObject obj;
     }
 
