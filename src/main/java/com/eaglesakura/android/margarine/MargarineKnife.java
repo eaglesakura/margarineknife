@@ -47,4 +47,14 @@ public class MargarineKnife {
             }
         }
     }
+
+    /**
+     * 動作クラスを上書きする
+     *
+     * @param origin 元のClass
+     * @param stead  今後利用するClass
+     */
+    public static void override(Class origin, Class stead) {
+        InternalUtils.override(origin, stead);
+    }
 }

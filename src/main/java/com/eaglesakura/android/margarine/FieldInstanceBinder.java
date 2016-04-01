@@ -34,8 +34,8 @@ public class FieldInstanceBinder implements FieldBinder {
         try {
             Annotation annotation = field.getAnnotation(annotationClass);
 
-            Class instanceClass = (Class) annotation.getClass().getMethod("value").invoke(annotation);
-            Class factoryClass = (Class) annotation.getClass().getMethod("factory").invoke(annotation);
+            Class instanceClass = InternalUtils.getClass((Class) annotation.getClass().getMethod("value").invoke(annotation));
+            Class factoryClass = InternalUtils.getClass((Class) annotation.getClass().getMethod("factory").invoke(annotation));
 
             if (instanceClass != null && !instanceClass.equals(Object.class)) {
                 // 直接インスタンスを生成させる

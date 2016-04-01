@@ -64,6 +64,7 @@ public class InjectionClass {
         for (Field field : fields) {
             Annotation annotation = field.getAnnotation(annotationClass);
             Class binderClass = (Class) annotationClass.getMethod("binder").invoke(annotation);
+            binderClass = InternalUtils.getClass(binderClass);
             Constructor constructor = binderClass.getDeclaredConstructor(Context.class, Field.class, Class.class);
             mBindFields.add((FieldBinder) constructor.newInstance(context, field, annotationClass));
         }
@@ -92,6 +93,7 @@ public class InjectionClass {
         for (Method method : methodList) {
             Annotation annotation = method.getAnnotation(annotationClass);
             Class binderClass = (Class) annotationClass.getMethod("binder").invoke(annotation);
+            binderClass = InternalUtils.getClass(binderClass);
             Constructor constructor = binderClass.getDeclaredConstructor(Context.class, Method.class, Class.class);
             mMethodBinders.add((MethodBinder) constructor.newInstance(context, method, annotationClass));
         }

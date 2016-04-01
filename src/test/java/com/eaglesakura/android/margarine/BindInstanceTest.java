@@ -42,6 +42,20 @@ public class BindInstanceTest extends UnitTestCase {
         fail();
     }
 
+    @Test
+    public void ファクトリを動的に切り替えられる() throws Exception {
+        FactoryInstanceCase testInstance = new FactoryInstanceCase();
+        assertNull(testInstance.obj);
+
+        MargarineKnife.override(SayFactory.class, SayFactory2.class);   // 動作クラスを上書きする
+        MargarineKnife.bind(testInstance, this);
+        MargarineKnife.override(SayFactory.class, SayFactory.class);    // 動作クラスを元に戻す
+
+        assertNotNull(testInstance.obj);
+        assertNotEquals(testInstance.obj.getClass(), SayObject.class);
+        assertEquals(testInstance.obj.hello(), "Bonjour");
+    }
+
     public static class SayObject {
         public String hello() {
             return "hello";
@@ -68,6 +82,18 @@ public class BindInstanceTest extends UnitTestCase {
                 @Override
                 public String hello() {
                     return "こんにちは";
+                }
+            };
+        }
+    }
+
+    public static class SayFactory2 implements InjectionFactory<SayObject> {
+        @Override
+        public SayObject newInstance(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst, Field field) {
+            return new SayObject() {
+                @Override
+                public String hello() {
+                    return "Bonjour";
                 }
             };
         }
