@@ -1,30 +1,28 @@
 package com.eaglesakura.android.margarine;
 
-import android.support.annotation.IdRes;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * View Injection
+ * Instance Injection
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})
-public @interface Bind {
+public @interface BindInstance {
     /**
-     * R.id.**
+     * シンプルにnewを行う
      */
-    @IdRes int value() default 0;
+    Class value() default Object.class;
 
     /**
-     * R.id."resName"
+     * ファクトリを提供させる
      */
-    String resName() default "";
+    Class<? extends InjectionFactory> factory() default InjectionFactory.class;
 
     /**
      * BinderClass
      */
-    Class binder() default FieldResourceBinder.FieldBinderView.class;
+    Class<? extends FieldBinder> binder() default FieldInstanceBinder.class;
 }

@@ -34,6 +34,7 @@ public class InjectionClass {
         sFieldAnnotations.add(BindInt.class);
         sFieldAnnotations.add(BindString.class);
         sFieldAnnotations.add(BindStringArray.class);
+        sFieldAnnotations.add(BindInstance.class);
 
         sMethodAnnotations.add(OnClick.class);
         sMethodAnnotations.add(OnCheckedChanged.class);

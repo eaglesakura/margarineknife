@@ -1,7 +1,6 @@
 package com.eaglesakura.android.margarine;
 
 import android.support.annotation.ArrayRes;
-import android.support.annotation.StringRes;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -27,5 +26,5 @@ public @interface BindStringArray {
     /**
      * BinderClass
      */
-    Class binder() default FieldBinder.FieldBinderStringArray.class;
+    Class<? extends FieldBinder> binder() default FieldResourceBinder.FieldBinderStringArray.class;
 }

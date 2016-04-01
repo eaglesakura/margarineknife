@@ -2,8 +2,9 @@
  * 1.0.0  : release
  * 1.0.1  : Fragmentを強制的に子まで呼び出している不具合を修正
  * 1.0.x  : Circle CIに移行
+ * 1.1.x  : 簡易的な依存性注入に対応
  */
-def ARTIFACT_VERSION = "1.0"
+def ARTIFACT_VERSION = "1.1"
 def ARTIFACT_NAME = file(".").absoluteFile.name
 def ARTIFACT_INSTALL_TARGET = getArtifactInstallTarget()
 
@@ -41,6 +42,7 @@ dependencies {
      * support libs
      */
     compile "com.android.support:support-v4:${ANDROID_SUPPORT_LIB_VERSION}"
+    compile 'com.android.support:support-annotations:+'
 
     if (EGLIBRARY_COMPILE_LOCAL) {
         testCompile project(":eglibrary:android-unittest-support")
