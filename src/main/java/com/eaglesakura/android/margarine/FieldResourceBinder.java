@@ -85,13 +85,17 @@ public abstract class FieldResourceBinder implements FieldBinder {
 
         @Override
         protected void onApply(InjectionClass srcClass, Object src, Object dst) throws Exception {
+            mField.set(dst, lazy(srcClass, src, dst));
+        }
+
+        @Override
+        public Object lazy(InjectionClass srcClass, Object src, Object dst) {
             try {
-                mField.set(dst, srcClass.findView(src, mResourceId));
+                return srcClass.findView(src, mResourceId);
             } catch (Throwable e) {
                 if (mNullable) {
                     // Nullを認めるため、何もしない
-                    mField.set(dst, null);
-                    return;
+                    return null;
                 } else {
                     throw e;
                 }
@@ -112,6 +116,11 @@ public abstract class FieldResourceBinder implements FieldBinder {
         protected void onApply(InjectionClass srcClass, Object src, Object dst) throws Exception {
             mField.set(dst, srcClass.getStringRes(src, mResourceId));
         }
+
+        @Override
+        public Object lazy(InjectionClass srcClass, Object src, Object dst) {
+            return srcClass.getStringRes(src, mResourceId);
+        }
     }
 
     public static class FieldBinderInteger extends FieldResourceBinder {
@@ -124,6 +133,11 @@ public abstract class FieldResourceBinder implements FieldBinder {
         protected void onApply(InjectionClass srcClass, Object src, Object dst) throws Exception {
             mField.setInt(dst, srcClass.getIntRes(src, mResourceId));
         }
+
+        @Override
+        public Object lazy(InjectionClass srcClass, Object src, Object dst) {
+            return srcClass.getIntRes(src, mResourceId);
+        }
     }
 
     public static class FieldBinderStringArray extends FieldResourceBinder {
@@ -135,6 +149,11 @@ public abstract class FieldResourceBinder implements FieldBinder {
         @Override
         protected void onApply(InjectionClass srcClass, Object src, Object dst) throws Exception {
             mField.set(dst, srcClass.getStringArrayRes(src, mResourceId));
+        }
+
+        @Override
+        public Object lazy(InjectionClass srcClass, Object src, Object dst) {
+            return srcClass.getStringArrayRes(src, mResourceId);
         }
     }
 

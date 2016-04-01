@@ -90,4 +90,26 @@ public class FieldInstanceBinder implements FieldBinder {
             throw new InstanceCreateFailedException(e);
         }
     }
+
+    @Override
+    public Object lazy(InjectionClass srcClass, Object src, Object dst) {
+        try {
+            if (mConstructor != null) {
+                return mConstructor.newInstance();
+            } else {
+                InjectionClass dstClass = InjectionClass.get(dst.getClass());
+                InjectionFactory factory = mFactory.newInstance();
+                Object instance = factory.newInstance(srcClass, src, dstClass, dst, mField);
+                if (instance == null && isNonNull()) {
+                    // NonNull制約でインスタンス生成に失敗した
+                    throw new InstanceCreateFailedException();
+                }
+                return instance;
+            }
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new InstanceCreateFailedException(e);
+        }
+    }
 }
