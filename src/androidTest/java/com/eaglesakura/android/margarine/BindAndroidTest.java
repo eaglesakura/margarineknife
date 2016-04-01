@@ -83,6 +83,16 @@ public class BindAndroidTest extends ModuleTestCase {
         assertFalse(dst.mChecked);
         dst.mCheckBox.setChecked(true);
         assertTrue(dst.mChecked);
+
+        // 遅延クラスを確認
+        assertNotNull(dst.mLazyView);
+        assertEquals(dst.mLazyView.get(), dst.mView);
+        assertNotNull(dst.mLazyString);
+        assertEquals(dst.mLazyString.get(), dst.mString);
+        assertNotNull(dst.mLazyStrings);
+        assertTrue(Arrays.equals(dst.mLazyStrings.get(), dst.mStrings));
+        assertNotNull(dst.mLazyInt);
+        assertEquals((int) dst.mLazyInt.get(), dst.mInt);
     }
 
     public void test_Viewバインドに失敗する() throws Exception {
