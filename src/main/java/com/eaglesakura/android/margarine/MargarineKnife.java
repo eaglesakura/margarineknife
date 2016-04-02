@@ -26,26 +26,19 @@ public class MargarineKnife {
         bind(dialog, dialog);
     }
 
-    public static void bind(Object dst, Object src) {
-        bind(InjectionClass.get(dst.getClass()), dst, InjectionClass.get(src.getClass()), src);
+    /**
+     * self to self
+     */
+    public static void bindSelf(Object srcDst) {
+        new Builder().from(srcDst).to(srcDst).bind();
     }
 
-    /**
-     * データを注入する
-     */
-    public static void bind(InjectionClass dstClass, Object dst, InjectionClass srcClass, Object src) {
-        Context context = srcClass.getContext(src);
+    public static void bind(Object dst, Object src) {
+        new Builder().from(src).to(dst).bind();
+    }
 
-        for (FieldBinder field : dstClass.listBindFields(context)) {
-            field.apply(srcClass, src, dst);
-        }
-
-        for (MethodBinder method : dstClass.listBindMethods(context)) {
-            List<View> views = method.listBindViews(srcClass, src);
-            for (View view : views) {
-                method.bind(dst, view);
-            }
-        }
+    public static Builder from(Object src) {
+        return new Builder().from(src);
     }
 
     /**
@@ -56,5 +49,45 @@ public class MargarineKnife {
      */
     public static void override(Class origin, Class stead) {
         InternalUtils.override(origin, stead);
+    }
+
+    public static class Builder {
+        private Object mSrc;
+
+        private InjectionClass mSrcClass;
+
+        private Object mDst;
+
+        private InjectionClass mDstClass;
+
+        private Builder() {
+        }
+
+        public Builder from(Object src) {
+            mSrc = src;
+            mSrcClass = InjectionClass.get(src.getClass());
+            return this;
+        }
+
+        public Builder to(Object dst) {
+            mDst = dst;
+            mDstClass = InjectionClass.get(dst.getClass());
+            return this;
+        }
+
+        public void bind() {
+            Context context = mSrcClass.getContext(mSrc);
+
+            for (FieldBinder field : mDstClass.listBindFields(context)) {
+                field.apply(mSrcClass, mSrc, mDst);
+            }
+
+            for (MethodBinder method : mDstClass.listBindMethods(context)) {
+                List<View> views = method.listBindViews(mSrcClass, mSrc);
+                for (View view : views) {
+                    method.bind(mDst, view);
+                }
+            }
+        }
     }
 }
