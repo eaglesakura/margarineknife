@@ -66,7 +66,14 @@ public class InjectionClass {
             Class binderClass = (Class) annotationClass.getMethod("binder").invoke(annotation);
             binderClass = InternalUtils.getClass(binderClass);
             Constructor constructor = binderClass.getDeclaredConstructor(Context.class, Field.class, Class.class);
-            mBindFields.add((FieldBinder) constructor.newInstance(context, field, annotationClass));
+
+            FieldBinder fieldBinder = (FieldBinder) constructor.newInstance(context, field, annotationClass);
+            // 遅延実行する
+            if (field.getType().equals(Lazy.class)) {
+                mBindFields.add(new FieldLazyBinder(field, fieldBinder));
+            } else {
+                mBindFields.add(fieldBinder);
+            }
         }
     }
 

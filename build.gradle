@@ -41,7 +41,8 @@ dependencies {
     /**
      * support libs
      */
-    provided "com.android.support:support-v4:${ANDROID_SUPPORT_LIB_VERSION}"
+//    provided "com.android.support:support-v4:${ANDROID_SUPPORT_LIB_VERSION}"
+    compile "com.android.support:support-v4:${ANDROID_SUPPORT_LIB_VERSION}"
 //    compile 'com.android.support:support-annotations:+'
 
     if (EGLIBRARY_COMPILE_LOCAL) {

@@ -76,6 +76,30 @@ public class BindInstanceTest extends UnitTestCase {
         fail();
     }
 
+    @Test
+    public void 遅延生成が行われる() throws Exception {
+        LazyInstanceCase testInstance = new LazyInstanceCase();
+        assertNull(testInstance.lazyObj);
+        assertNull(testInstance.lazyObj2);
+
+        MargarineKnife.bind(testInstance, this);
+
+        assertNotNull(testInstance.lazyObj);
+        assertNotNull(testInstance.lazyObj2);
+
+        assertEquals(testInstance.lazyObj.get().hello(), "hello");
+        assertEquals(testInstance.lazyObj2.get().hello(), "こんにちは");
+    }
+
+    @Test(expected = ResourceBindError.class)
+    public void Lazyの場合でもコンストラクタミスの場合はバインド時点で失敗する() {
+        LazyErrorInstanceCase testInstance = new LazyErrorInstanceCase();
+        assertNull(testInstance.lazyObj);
+
+        MargarineKnife.bind(testInstance, this);
+        fail(); // 成功してはならない
+    }
+
     public static class SayObject {
         public String hello() {
             return "hello";
@@ -124,6 +148,19 @@ public class BindInstanceTest extends UnitTestCase {
                 }
             };
         }
+    }
+
+    public static class LazyInstanceCase {
+        @BindInstance(SayObject.class)
+        Lazy<SayObject> lazyObj;
+
+        @BindInstance(factory = SayFactory.class)
+        Lazy<SayObject> lazyObj2;
+    }
+
+    public static class LazyErrorInstanceCase {
+        @BindInstance(Say2Object.class)
+        Lazy<SayObject> lazyObj;
     }
 
     public static class SimpleInstanceCase {
