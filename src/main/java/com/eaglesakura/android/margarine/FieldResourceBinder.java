@@ -62,10 +62,10 @@ public abstract class FieldResourceBinder implements FieldBinder {
      * 値を書き込む
      */
     @Override
-    public void apply(InjectionClass srcClass, Object src, Object dst) {
+    public void apply(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) {
 
         try {
-            onApply(srcClass, src, dst);
+            onApply(srcClass, src, dstClass, dst);
         } catch (Exception e) {
             throw new ResourceBindError(e);
         }
@@ -74,7 +74,7 @@ public abstract class FieldResourceBinder implements FieldBinder {
     /**
      * 値を実際に書き込む
      */
-    protected abstract void onApply(InjectionClass srcClass, Object src, Object dst) throws Exception;
+    protected abstract void onApply(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) throws Exception;
 
 
     public static class FieldBinderView extends FieldResourceBinder {
@@ -83,13 +83,13 @@ public abstract class FieldResourceBinder implements FieldBinder {
         }
 
         @Override
-        protected void onApply(InjectionClass srcClass, Object src, Object dst) throws Exception {
+        protected void onApply(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) throws Exception {
             valid(View.class);
-            mField.set(dst, lazy(srcClass, src, dst));
+            mField.set(dst, lazy(srcClass, src, dstClass, dst));
         }
 
         @Override
-        public Object lazy(InjectionClass srcClass, Object src, Object dst) {
+        public Object lazy(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) {
             try {
                 return srcClass.findView(src, mResourceId);
             } catch (Throwable e) {
@@ -112,13 +112,13 @@ public abstract class FieldResourceBinder implements FieldBinder {
         }
 
         @Override
-        protected void onApply(InjectionClass srcClass, Object src, Object dst) throws Exception {
+        protected void onApply(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) throws Exception {
             valid(String.class);
             mField.set(dst, srcClass.getStringRes(src, mResourceId));
         }
 
         @Override
-        public Object lazy(InjectionClass srcClass, Object src, Object dst) {
+        public Object lazy(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) {
             return srcClass.getStringRes(src, mResourceId);
         }
     }
@@ -129,13 +129,13 @@ public abstract class FieldResourceBinder implements FieldBinder {
         }
 
         @Override
-        protected void onApply(InjectionClass srcClass, Object src, Object dst) throws Exception {
+        protected void onApply(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) throws Exception {
             valid(int.class);
             mField.setInt(dst, srcClass.getIntRes(src, mResourceId));
         }
 
         @Override
-        public Object lazy(InjectionClass srcClass, Object src, Object dst) {
+        public Object lazy(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) {
             return srcClass.getIntRes(src, mResourceId);
         }
     }
@@ -146,13 +146,13 @@ public abstract class FieldResourceBinder implements FieldBinder {
         }
 
         @Override
-        protected void onApply(InjectionClass srcClass, Object src, Object dst) throws Exception {
+        protected void onApply(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) throws Exception {
             valid(String[].class);
             mField.set(dst, srcClass.getStringArrayRes(src, mResourceId));
         }
 
         @Override
-        public Object lazy(InjectionClass srcClass, Object src, Object dst) {
+        public Object lazy(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) {
             return srcClass.getStringArrayRes(src, mResourceId);
         }
     }

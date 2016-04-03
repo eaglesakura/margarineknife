@@ -79,7 +79,7 @@ public class MargarineKnife {
             Context context = mSrcClass.getContext(mSrc);
 
             for (FieldBinder field : mDstClass.listBindFields(context)) {
-                field.apply(mSrcClass, mSrc, mDst);
+                field.apply(mSrcClass, mSrc, mDstClass, mDst);
             }
 
             for (MethodBinder method : mDstClass.listBindMethods(context)) {

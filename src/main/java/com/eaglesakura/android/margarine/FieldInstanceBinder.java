@@ -70,12 +70,11 @@ public class FieldInstanceBinder implements FieldBinder {
     }
 
     @Override
-    public void apply(InjectionClass srcClass, Object src, Object dst) {
+    public void apply(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) {
         try {
             if (mConstructor != null) {
                 mField.set(dst, mConstructor.newInstance());
             } else {
-                InjectionClass dstClass = InjectionClass.get(dst.getClass());
                 InjectionFactory factory = mFactory.newInstance();
                 Object instance = factory.newInstance(srcClass, src, dstClass, dst, mField);
                 if (instance == null && isNonNull()) {
@@ -92,12 +91,11 @@ public class FieldInstanceBinder implements FieldBinder {
     }
 
     @Override
-    public Object lazy(InjectionClass srcClass, Object src, Object dst) {
+    public Object lazy(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) {
         try {
             if (mConstructor != null) {
                 return mConstructor.newInstance();
             } else {
-                InjectionClass dstClass = InjectionClass.get(dst.getClass());
                 InjectionFactory factory = mFactory.newInstance();
                 Object instance = factory.newInstance(srcClass, src, dstClass, dst, mField);
                 if (instance == null && isNonNull()) {

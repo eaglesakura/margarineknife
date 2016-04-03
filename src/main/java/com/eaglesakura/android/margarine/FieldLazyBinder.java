@@ -23,9 +23,9 @@ class FieldLazyBinder implements FieldBinder {
     }
 
     @Override
-    public void apply(InjectionClass srcClass, Object src, Object dst) {
+    public void apply(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) {
         try {
-            mField.set(dst, new LazyImpl(srcClass, src, dst));
+            mField.set(dst, new LazyImpl(srcClass, src, dstClass, dst));
         } catch (Exception e) {
             throw new ResourceBindError(e);
         }
@@ -35,7 +35,7 @@ class FieldLazyBinder implements FieldBinder {
      * 呼びだされてはならない
      */
     @Override
-    public Object lazy(InjectionClass srcClass, Object src, Object dst) {
+    public Object lazy(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) {
         throw new UnsupportedOperationException();
     }
 
@@ -44,15 +44,18 @@ class FieldLazyBinder implements FieldBinder {
 
         boolean mInitialized;
 
-        final InjectionClass mInjectionClass;
+        final InjectionClass mInjectionSrcClass;
 
         final Object mSrc;
 
+        final InjectionClass mInjectionDstClass;
+
         final Object mDst;
 
-        public LazyImpl(InjectionClass injectionClass, Object src, Object dst) {
-            mInjectionClass = injectionClass;
+        public LazyImpl(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) {
+            mInjectionSrcClass = srcClass;
             mSrc = src;
+            mInjectionDstClass = dstClass;
             mDst = dst;
         }
 
@@ -61,7 +64,7 @@ class FieldLazyBinder implements FieldBinder {
             if (!mInitialized) {
                 synchronized (this) {
                     if (!mInitialized) {
-                        mItem = mFieldBinder.lazy(mInjectionClass, mSrc, mDst);
+                        mItem = mFieldBinder.lazy(mInjectionSrcClass, mSrc, mInjectionDstClass, mDst);
                         mInitialized = true;
                     }
                 }
