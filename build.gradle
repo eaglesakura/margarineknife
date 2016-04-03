@@ -3,8 +3,9 @@
  * 1.0.1  : Fragmentを強制的に子まで呼び出している不具合を修正
  * 1.0.x  : Circle CIに移行
  * 1.1.x  : 簡易的な依存性注入に対応
+ * 1.2.x  : インターフェースの引数を追加
  */
-def ARTIFACT_VERSION = "1.1"
+def ARTIFACT_VERSION = "1.2"
 def ARTIFACT_NAME = file(".").absoluteFile.name
 def ARTIFACT_INSTALL_TARGET = getArtifactInstallTarget()
 
