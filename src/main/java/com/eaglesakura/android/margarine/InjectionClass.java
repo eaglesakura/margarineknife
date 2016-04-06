@@ -34,7 +34,6 @@ public class InjectionClass {
         sFieldAnnotations.add(BindInt.class);
         sFieldAnnotations.add(BindString.class);
         sFieldAnnotations.add(BindStringArray.class);
-        sFieldAnnotations.add(BindInstance.class);
 
         sMethodAnnotations.add(OnClick.class);
         sMethodAnnotations.add(OnCheckedChanged.class);
@@ -68,12 +67,7 @@ public class InjectionClass {
             Constructor constructor = binderClass.getDeclaredConstructor(Context.class, Field.class, Class.class);
 
             FieldBinder fieldBinder = (FieldBinder) constructor.newInstance(context, field, annotationClass);
-            // 遅延実行する
-            if (field.getType().equals(Lazy.class)) {
-                mBindFields.add(new FieldLazyBinder(field, fieldBinder));
-            } else {
-                mBindFields.add(fieldBinder);
-            }
+            mBindFields.add(fieldBinder);
         }
     }
 

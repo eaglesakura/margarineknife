@@ -41,16 +41,6 @@ public class MargarineKnife {
         return new Builder().from(src);
     }
 
-    /**
-     * 動作クラスを上書きする
-     *
-     * @param origin 元のClass
-     * @param stead  今後利用するClass
-     */
-    public static void override(Class origin, Class stead) {
-        InternalUtils.override(origin, stead);
-    }
-
     public static class Builder {
         private Object mSrc;
 
