@@ -55,27 +55,7 @@ class InternalUtils {
         return new ArrayList<>(result.values());
     }
 
-    /**
-     * 動的に実装を切り替える場合のファクトリ
-     */
-    private static final Map<Class, Class> sOverrideClasses = new HashMap<>();
-
-    static void override(Class origin, Class stead) {
-        synchronized (sOverrideClasses) {
-            sOverrideClasses.put(origin, stead);
-        }
-        // ロード済みのClassを一旦削除する
-        InjectionClass.clearCaches();
-    }
-
     static Class getClass(Class origin) {
-        synchronized (sOverrideClasses) {
-            Class aClass = sOverrideClasses.get(origin);
-            if (aClass != null) {
-                return aClass;
-            } else {
-                return origin;
-            }
-        }
+        return origin;
     }
 }

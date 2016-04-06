@@ -80,15 +80,14 @@ public abstract class FieldResourceBinder implements FieldBinder {
     public static class FieldBinderView extends FieldResourceBinder {
         public FieldBinderView(Context context, Field field, Class annotationClass) {
             super(context, field, annotationClass, "id");
+            valid(View.class);
         }
 
         @Override
         protected void onApply(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) throws Exception {
-            valid(View.class);
             mField.set(dst, lazy(srcClass, src, dstClass, dst));
         }
 
-        @Override
         public Object lazy(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) {
             try {
                 return srcClass.findView(src, mResourceId);
@@ -113,13 +112,8 @@ public abstract class FieldResourceBinder implements FieldBinder {
 
         @Override
         protected void onApply(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) throws Exception {
-            valid(String.class);
             mField.set(dst, srcClass.getStringRes(src, mResourceId));
-        }
-
-        @Override
-        public Object lazy(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) {
-            return srcClass.getStringRes(src, mResourceId);
+            valid(String.class);
         }
     }
 
@@ -130,30 +124,20 @@ public abstract class FieldResourceBinder implements FieldBinder {
 
         @Override
         protected void onApply(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) throws Exception {
-            valid(int.class);
             mField.setInt(dst, srcClass.getIntRes(src, mResourceId));
-        }
-
-        @Override
-        public Object lazy(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) {
-            return srcClass.getIntRes(src, mResourceId);
+            valid(int.class);
         }
     }
 
     public static class FieldBinderStringArray extends FieldResourceBinder {
         public FieldBinderStringArray(Context context, Field field, Class annotationClass) {
             super(context, field, annotationClass, "array");
+            valid(String[].class);
         }
 
         @Override
         protected void onApply(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) throws Exception {
-            valid(String[].class);
             mField.set(dst, srcClass.getStringArrayRes(src, mResourceId));
-        }
-
-        @Override
-        public Object lazy(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) {
-            return srcClass.getStringArrayRes(src, mResourceId);
         }
     }
 

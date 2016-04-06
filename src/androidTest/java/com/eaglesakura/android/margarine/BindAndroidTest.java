@@ -21,7 +21,7 @@ public class BindAndroidTest extends ModuleTestCase {
         InjectionClass target = new InjectionClass(BindTarget.class);
         List<FieldBinder> fields = target.listBindFields(getContext());
         assertNotNull(fields);
-        assertEquals(fields.size(), 11);
+        assertEquals(fields.size(), 7);
     }
 
     public void test_Inject対象メソッド一覧を取得できる() throws Exception {
@@ -83,16 +83,6 @@ public class BindAndroidTest extends ModuleTestCase {
         assertFalse(dst.mChecked);
         dst.mCheckBox.setChecked(true);
         assertTrue(dst.mChecked);
-
-        // 遅延クラスを確認
-        assertNotNull(dst.mLazyView);
-        assertEquals(dst.mLazyView.get(), dst.mView);
-        assertNotNull(dst.mLazyString);
-        assertEquals(dst.mLazyString.get(), dst.mString);
-        assertNotNull(dst.mLazyStrings);
-        assertTrue(Arrays.equals(dst.mLazyStrings.get(), dst.mStrings));
-        assertNotNull(dst.mLazyInt);
-        assertEquals((int) dst.mLazyInt.get(), dst.mInt);
     }
 
     public void test_Viewバインドに失敗する() throws Exception {
@@ -149,9 +139,6 @@ public class BindAndroidTest extends ModuleTestCase {
         @Bind(resName = "BindTest.View")
         View mView;
 
-        @Bind(resName = "BindTest.View")
-        Lazy<View> mLazyView;
-
         @Bind(resName = "BindTest.TextView")
         TextView mTextView;
 
@@ -164,20 +151,11 @@ public class BindAndroidTest extends ModuleTestCase {
         @BindString(resName = "BindTest.Value.String")
         String mString;
 
-        @BindString(resName = "BindTest.Value.String")
-        Lazy<String> mLazyString;
-
         @BindStringArray(resName = "BindTest_Array_Strings")
         String[] mStrings;
 
-        @BindStringArray(resName = "BindTest_Array_Strings")
-        Lazy<String[]> mLazyStrings;
-
         @BindInt(resName = "BindTest.Value.Integer")
         int mInt;
-
-        @BindInt(resName = "BindTest.Value.Integer")
-        Lazy<Integer> mLazyInt;
 
         @OnClick(resName = "BindTest.View")
         void clickView(View view) {

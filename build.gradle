@@ -3,8 +3,9 @@
  * 1.0.1  : Fragmentを強制的に子まで呼び出している不具合を修正
  * 1.0.x  : Circle CIに移行
  * 1.1.x  : 簡易的な依存性注入に対応
+ * 1.2.x  : 実験的に追加した依存性注入クラスを別ライブラリに移行
  */
-def ARTIFACT_VERSION = "1.1"
+def ARTIFACT_VERSION = "1.2"
 def ARTIFACT_NAME = file(".").absoluteFile.name
 def ARTIFACT_INSTALL_TARGET = getArtifactInstallTarget()
 
@@ -162,14 +163,6 @@ uploadArchives {
             license {
                 name 'MIT License'
                 url 'https://raw.githubusercontent.com/eaglesakura/onactivityresult-invoke/master/LICENSE.txt'
-            }
-        }
-        dependencies {
-            dependency {
-                groupId 'com.eaglesakura'
-                artifactId = 'simple-utils'
-                version = dependenceisVersion("com.eaglesakura:simple-utils", "1.1.+")
-                scope = 'compile'
             }
         }
     }
