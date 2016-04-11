@@ -25,9 +25,13 @@ public class InjectionClass {
 
     List<MethodBinder> mMethodBinders;
 
+    List<MenuBinder> mMenuBinders;
+
     static final Set<Class<? extends Annotation>> sFieldAnnotations = new HashSet<>();
 
     static final Set<Class<? extends Annotation>> sMethodAnnotations = new HashSet<>();
+
+    static final Set<Class<? extends Annotation>> sMenuAnnotations = new HashSet<>();
 
     static {
         sFieldAnnotations.add(Bind.class);
@@ -38,6 +42,8 @@ public class InjectionClass {
         sMethodAnnotations.add(OnClick.class);
         sMethodAnnotations.add(OnCheckedChanged.class);
         sMethodAnnotations.add(OnLongClick.class);
+
+        sMethodAnnotations.add(OnMenuClick.class);
     }
 
     /**
@@ -74,7 +80,7 @@ public class InjectionClass {
     /**
      * Injection対象のField一覧を取得する
      */
-    public List<FieldBinder> listBindFields(Context context) {
+    List<FieldBinder> listBindFields(Context context) {
         if (mBindFields == null) {
             mBindFields = new ArrayList<>();
             try {
@@ -89,6 +95,22 @@ public class InjectionClass {
         return mBindFields;
     }
 
+    List<MenuBinder> listBindMenues(Context context) {
+        if (mMenuBinders == null) {
+            mMenuBinders = new ArrayList<>();
+            try {
+                for (Class<? extends Annotation> clazz : sMenuAnnotations) {
+                    addBindMenuMethods(context, clazz);
+                }
+            } catch (Exception e) {
+                throw new ResourceBindError(e);
+            }
+        }
+
+        return mMenuBinders;
+    }
+
+
     private void addBindMethods(Context context, Class<? extends Annotation> annotationClass) throws Exception {
         List<Method> methodList = InternalUtils.listAnnotationMethods(mClass, annotationClass);
         for (Method method : methodList) {
@@ -100,7 +122,18 @@ public class InjectionClass {
         }
     }
 
-    public List<MethodBinder> listBindMethods(Context context) {
+    private void addBindMenuMethods(Context context, Class<? extends Annotation> annotationClass) throws Exception {
+        List<Method> methodList = InternalUtils.listAnnotationMethods(mClass, annotationClass);
+        for (Method method : methodList) {
+            Annotation annotation = method.getAnnotation(annotationClass);
+            Class binderClass = (Class) annotationClass.getMethod("binder").invoke(annotation);
+            binderClass = InternalUtils.getClass(binderClass);
+            Constructor constructor = binderClass.getDeclaredConstructor(Context.class, Method.class, Class.class);
+            mMenuBinders.add((MenuBinder) constructor.newInstance(context, method, annotationClass));
+        }
+    }
+
+    List<MethodBinder> listBindMethods(Context context) {
         if (mMethodBinders == null) {
             mMethodBinders = new ArrayList<>();
 
@@ -173,7 +206,7 @@ public class InjectionClass {
             return ((Dialog) src).findViewById(resId);
         }
 
-        throw new Error("resId :: " + resId);
+        throw new ViewNotFoundError("resId :: " + resId);
     }
 
     static final Map<Class, InjectionClass> sCaches = new HashMap<>();
