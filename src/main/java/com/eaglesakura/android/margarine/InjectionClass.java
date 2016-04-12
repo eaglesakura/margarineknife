@@ -43,7 +43,7 @@ public class InjectionClass {
         sMethodAnnotations.add(OnCheckedChanged.class);
         sMethodAnnotations.add(OnLongClick.class);
 
-        sMethodAnnotations.add(OnMenuClick.class);
+        sMenuAnnotations.add(OnMenuClick.class);
     }
 
     /**
