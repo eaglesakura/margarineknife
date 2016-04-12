@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.support.v4.app.Fragment;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import java.util.List;
@@ -37,8 +39,47 @@ public class MargarineKnife {
         new Builder().from(src).to(dst).bind();
     }
 
+    /**
+     * Menuメソッドを関連付ける
+     */
+    public static void bindMenu(Menu menu, Object dst) {
+        new MenuBuilder().from(menu).to(dst).bind();
+    }
+
     public static Builder from(Object src) {
         return new Builder().from(src);
+    }
+
+    static class MenuBuilder {
+        private Menu mMenu;
+
+        private Object mDst;
+
+        private InjectionClass mDstClass;
+
+        private MenuBuilder() {
+        }
+
+        public MenuBuilder from(Menu menu) {
+            mMenu = menu;
+            return this;
+        }
+
+        public MenuBuilder to(Object dst) {
+            mDst = dst;
+            mDstClass = InjectionClass.get(dst.getClass());
+            return this;
+        }
+
+        public void bind() {
+            Context context = null;
+
+            for (MenuBinder binder : mDstClass.listBindMenues(context)) {
+                for (MenuItem item : binder.listBindMenues(mMenu)) {
+                    binder.bind(mDst, item);
+                }
+            }
+        }
     }
 
     public static class Builder {

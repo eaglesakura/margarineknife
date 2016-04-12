@@ -4,6 +4,7 @@
  * 1.0.x  : Circle CIに移行
  * 1.1.x  : 簡易的な依存性注入に対応
  * 1.2.x  : 実験的に追加した依存性注入クラスを別ライブラリに移行
+ * 1.2.x  : Menu用のBinderを追加
  */
 def ARTIFACT_VERSION = "1.2"
 def ARTIFACT_NAME = file(".").absoluteFile.name
