@@ -27,4 +27,9 @@ public @interface OnMenuClick {
      * BinderClass
      */
     Class binder() default MenuBinder.OnClickBinder.class;
+
+    /**
+     * menuが存在しない場合がある場合true
+     */
+    boolean nullable() default true;
 }

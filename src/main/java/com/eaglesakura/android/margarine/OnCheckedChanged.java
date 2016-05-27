@@ -27,4 +27,6 @@ public @interface OnCheckedChanged {
      * BinderClass
      */
     Class binder() default MethodBinder.OnCheckedChangeBinder.class;
+
+    boolean nullable() default true;
 }

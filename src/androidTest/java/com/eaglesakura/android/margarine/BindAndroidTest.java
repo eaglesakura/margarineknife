@@ -29,7 +29,7 @@ public class BindAndroidTest extends ModuleTestCase {
         List<MethodBinder> binders = target.listBindMethods(getContext());
 
         assertNotNull(binders);
-        assertEquals(binders.size(), 3);
+        assertEquals(binders.size(), 6);
     }
 
     public void test_Nullable制約を加えられる() {
@@ -176,5 +176,17 @@ public class BindAndroidTest extends ModuleTestCase {
             mChecked = isChecked;
         }
 
+        @OnClick(resName = "DummyRes", nullable = true)
+        void nullableClickMethod() {
+            fail();
+        }
+        @OnLongClick(resName = "DummyRes2", nullable = true)
+        void nullableLongClickMethod() {
+            fail();
+        }
+        @OnCheckedChanged(resName = "DummyRes", nullable = true)
+        void nullableCheckedkMethod(boolean check) {
+            fail();
+        }
     }
 }
