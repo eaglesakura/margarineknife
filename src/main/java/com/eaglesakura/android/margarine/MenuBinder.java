@@ -28,6 +28,8 @@ public abstract class MenuBinder {
 
     protected int[] mMenuIdList;
 
+    protected final boolean mBindRequire;
+
     public MenuBinder(Context context, Method method, Class annotationClass) {
 
         try {
@@ -54,6 +56,8 @@ public abstract class MenuBinder {
             Annotation annotation = mMethod.getAnnotation(annotationClass);
             int[] intResId = (int[]) annotation.getClass().getMethod("value").invoke(annotation);
             String[] resNames = (String[]) annotation.getClass().getMethod("resName").invoke(annotation);
+            mBindRequire = !(boolean) annotation.getClass().getMethod("nullable").invoke(annotation);
+
             if (intResId.length > 0) {
                 mMenuIdList = intResId;
             } else if (resNames.length > 0) {
@@ -69,7 +73,7 @@ public abstract class MenuBinder {
                 throw new Error();
             } else {
                 for (int id : mMenuIdList) {
-                    if (id == 0) {
+                    if (id == 0 && mBindRequire) {
                         throw new Error();
                     }
                 }
@@ -114,6 +118,10 @@ public abstract class MenuBinder {
 
         @Override
         public void bind(Object dst, MenuItem menu) {
+            if (menu == null && !mBindRequire) {
+                return;
+            }
+
             menu.setOnMenuItemClickListener((it) -> {
                 Object result;
                 if (mMenuParameterRequire) {

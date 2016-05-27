@@ -27,4 +27,9 @@ public @interface OnClick {
      * BinderClass
      */
     Class binder() default MethodBinder.OnClickBinder.class;
+
+    /**
+     * Viewが存在しない場合がある場合true
+     */
+    boolean nullable() default false;
 }

@@ -21,6 +21,10 @@ public abstract class MethodBinder {
 
     protected int[] mViewIdList;
 
+
+    protected final boolean mBindRequire;
+
+
     public MethodBinder(Context context, Method method, Class annotationClass) {
         try {
             mMethod = method;
@@ -28,6 +32,7 @@ public abstract class MethodBinder {
                 mMethod.setAccessible(true);
             }
 
+            // メソッドの第1引数にViewを含めるか確認する
             {
                 Class<?>[] types = mMethod.getParameterTypes();
                 if (types == null || types.length == 0 || types[0].isPrimitive()) {
@@ -42,6 +47,7 @@ public abstract class MethodBinder {
             Annotation annotation = mMethod.getAnnotation(annotationClass);
             int[] intResId = (int[]) annotation.getClass().getMethod("value").invoke(annotation);
             String[] resNames = (String[]) annotation.getClass().getMethod("resName").invoke(annotation);
+            mBindRequire = !(boolean) annotation.getClass().getMethod("nullable").invoke(annotation);
             if (intResId.length > 0) {
                 mViewIdList = intResId;
             } else if (resNames.length > 0) {
@@ -57,7 +63,7 @@ public abstract class MethodBinder {
                 throw new Error();
             } else {
                 for (int id : mViewIdList) {
-                    if (id == 0) {
+                    if (id == 0 && mBindRequire) {
                         throw new Error();
                     }
                 }
@@ -99,6 +105,11 @@ public abstract class MethodBinder {
 
         @Override
         public void bind(Object dst, View view) {
+            // 必須ではないバインドは無視する
+            if (view == null && !mBindRequire) {
+                return;
+            }
+
             view.setOnClickListener(it -> {
                 if (mViewParameterRequire) {
                     invoke(dst, view);
@@ -120,6 +131,11 @@ public abstract class MethodBinder {
 
         @Override
         public void bind(Object dst, View view) {
+            // 必須ではないバインドは無視する
+            if (view == null && !mBindRequire) {
+                return;
+            }
+
             view.setOnLongClickListener(it -> {
                 if (mViewParameterRequire) {
                     return (Boolean) invoke(dst, it);
@@ -141,6 +157,11 @@ public abstract class MethodBinder {
 
         @Override
         public void bind(Object dst, View view) {
+            // 必須ではないバインドは無視する
+            if (view == null && !mBindRequire) {
+                return;
+            }
+
             ((CompoundButton) view).setOnCheckedChangeListener((it, isChecked) -> {
                 if (mViewParameterRequire) {
                     invoke(dst, it, isChecked);
