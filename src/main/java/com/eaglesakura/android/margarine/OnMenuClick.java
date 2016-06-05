@@ -31,5 +31,5 @@ public @interface OnMenuClick {
     /**
      * menuが存在しない場合がある場合true
      */
-    boolean nullable() default true;
+    boolean nullable() default false;
 }

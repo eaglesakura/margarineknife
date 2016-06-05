@@ -72,7 +72,7 @@ public class MargarineKnife {
         }
 
         public void bind() {
-            Context context = null;
+            Context context = mDstClass.getContext(mDst);
 
             for (MenuBinder binder : mDstClass.listBindMenues(context)) {
                 for (MenuItem item : binder.listBindMenues(mMenu)) {

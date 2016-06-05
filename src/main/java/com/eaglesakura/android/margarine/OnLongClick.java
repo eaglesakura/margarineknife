@@ -28,5 +28,5 @@ public @interface OnLongClick {
      */
     Class binder() default MethodBinder.OnLongClickBinder.class;
 
-    boolean nullable() default true;
+    boolean nullable() default false;
 }
