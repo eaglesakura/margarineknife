@@ -8,15 +8,13 @@ machine:
     version: oraclejdk8
   environment:
     ANDROID_HOME: /home/ubuntu/android-sdk
-    BUILD_CACHEDIR: /home/ubuntu/build-cache
     GRADLE_OPTS: -Xmx2G -Dorg.gradle.daemon=true
     JAVA_OPTS: -Dfile.encoding=UTF-8 -Xms1024m -Xmx2048m -XX:MaxPermSize=2048m
 dependencies:
   cache_directories:
     - "/home/ubuntu/android-sdk"
-    - "/home/ubuntu/build-cache"
   override:
-    - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/build-android-dependencies.sh)"
+    - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/install-android-sdk-auto.sh)"
 test:
   override:
     - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/build-test.sh)"
