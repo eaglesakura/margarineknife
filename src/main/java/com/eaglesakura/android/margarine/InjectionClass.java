@@ -117,7 +117,12 @@ public class InjectionClass {
             Annotation annotation = method.getAnnotation(annotationClass);
             Class binderClass = (Class) annotationClass.getMethod("binder").invoke(annotation);
             binderClass = InternalUtils.getClass(binderClass);
-            Constructor constructor = binderClass.getDeclaredConstructor(Context.class, Method.class, Class.class);
+            Constructor constructor;
+            try {
+                constructor = binderClass.getDeclaredConstructor(Context.class, Method.class, Class.class);
+            } catch (Exception e) {
+                throw new Exception("FieldBinder class[" + binderClass.getName() + "]", e);
+            }
             mMethodBinders.add((MethodBinder) constructor.newInstance(context, method, annotationClass));
         }
     }
@@ -128,7 +133,12 @@ public class InjectionClass {
             Annotation annotation = method.getAnnotation(annotationClass);
             Class binderClass = (Class) annotationClass.getMethod("binder").invoke(annotation);
             binderClass = InternalUtils.getClass(binderClass);
-            Constructor constructor = binderClass.getDeclaredConstructor(Context.class, Method.class, Class.class);
+            Constructor constructor;
+            try {
+                constructor = binderClass.getDeclaredConstructor(Context.class, Method.class, Class.class);
+            } catch (Exception e) {
+                throw new Exception("MenuBinder class[" + binderClass.getName() + "]", e);
+            }
             mMenuBinders.add((MenuBinder) constructor.newInstance(context, method, annotationClass));
         }
     }

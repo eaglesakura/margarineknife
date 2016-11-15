@@ -1,10 +1,9 @@
 package com.eaglesakura.android.margarine;
 
 import android.content.Context;
+import android.support.annotation.Keep;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.CompoundButton;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -12,6 +11,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+@Keep
 public abstract class MenuBinder {
 
     protected final Method mMethod;
@@ -30,6 +30,7 @@ public abstract class MenuBinder {
 
     protected final boolean mBindRequire;
 
+    @Keep
     public MenuBinder(Context context, Method method, Class annotationClass) {
 
         try {
@@ -111,6 +112,7 @@ public abstract class MenuBinder {
      * setOnClickListener
      */
     public static class OnClickBinder extends MenuBinder {
+        @Keep
         public OnClickBinder(Context context, Method method, Class<? extends Annotation> annotationClass) {
             super(context, method, annotationClass);
             valid();

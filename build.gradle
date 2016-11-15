@@ -17,7 +17,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.+'
+        classpath 'com.android.tools.build:gradle:2.2.2'
         classpath 'me.tatarka:gradle-retrolambda:3.2.5' // support Lambda
     }
 }
@@ -36,7 +36,7 @@ if (!hasProperty("EGLIBRARY_COMPILE_LOCAL")) {
 }
 // check env
 if (!hasProperty("ANDROID_SUPPORT_LIB_VERSION")) {
-    ext.ANDROID_SUPPORT_LIB_VERSION = "23.+"
+    ext.ANDROID_SUPPORT_LIB_VERSION = "25.+"
 }
 
 dependencies {
@@ -58,13 +58,13 @@ dependencies {
 
         androidTestCompile 'com.eaglesakura:android-simple-utils:1.+'
         androidTestCompile 'com.eaglesakura:android-thread:1.+'
-        androidTestCompile 'com.eaglesakura:android-devicetest-support:1.+'
+        androidTestCompile 'com.eaglesakura:android-devicetest-support:2.+'
     }
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.0"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -73,7 +73,12 @@ android {
 
     defaultConfig {
         minSdkVersion 10
-        targetSdkVersion 23
+        targetSdkVersion 25
+        consumerProguardFiles 'proguard-rules.pro'
+    }
+
+    lintOptions {
+        disable "NewApi"
     }
 }
 
@@ -95,7 +100,7 @@ tasks.withType(Test) {
 
 // check env
 if (!hasProperty("ANDROID_SUPPORT_LIB_VERSION")) {
-    ext.ANDROID_SUPPORT_LIB_VERSION = "+"
+    ext.ANDROID_SUPPORT_LIB_VERSION = "25.+"
 }
 
 apply plugin: 'maven'

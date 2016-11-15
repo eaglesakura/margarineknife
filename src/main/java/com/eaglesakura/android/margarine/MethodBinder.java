@@ -1,6 +1,7 @@
 package com.eaglesakura.android.margarine;
 
 import android.content.Context;
+import android.support.annotation.Keep;
 import android.view.View;
 import android.widget.CompoundButton;
 
@@ -10,6 +11,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+@Keep
 public abstract class MethodBinder {
 
     protected final Method mMethod;
@@ -24,7 +26,7 @@ public abstract class MethodBinder {
 
     protected final boolean mBindRequire;
 
-
+    @Keep
     public MethodBinder(Context context, Method method, Class annotationClass) {
         try {
             mMethod = method;
@@ -97,7 +99,9 @@ public abstract class MethodBinder {
     /**
      * setOnClickListener
      */
+    @Keep
     public static class OnClickBinder extends MethodBinder {
+        @Keep
         public OnClickBinder(Context context, Method method, Class<? extends Annotation> annotationClass) {
             super(context, method, annotationClass);
             valid();
@@ -123,7 +127,9 @@ public abstract class MethodBinder {
     /**
      *
      */
+    @Keep
     public static class OnLongClickBinder extends MethodBinder {
+        @Keep
         public OnLongClickBinder(Context context, Method method, Class annotationClass) {
             super(context, method, annotationClass);
             valid();
@@ -149,7 +155,9 @@ public abstract class MethodBinder {
     /**
      * setOnCheckedChangeListener
      */
+    @Keep
     public static class OnCheckedChangeBinder extends MethodBinder {
+        @Keep
         public OnCheckedChangeBinder(Context context, Method method, Class<? extends Annotation> annotationClass) {
             super(context, method, annotationClass);
             valid(boolean.class);

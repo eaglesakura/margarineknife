@@ -1,7 +1,7 @@
 package com.eaglesakura.android.margarine;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+import android.support.annotation.Keep;
 import android.view.View;
 
 import java.lang.annotation.Annotation;
@@ -10,6 +10,7 @@ import java.lang.reflect.Field;
 /**
  * 書き込み対象のメンバ変数を構築する
  */
+@Keep
 public abstract class FieldResourceBinder implements FieldBinder {
     /**
      * 書き込み対象メンバ変数
@@ -27,6 +28,7 @@ public abstract class FieldResourceBinder implements FieldBinder {
      */
     protected boolean mNullable;
 
+    @Keep
     public FieldResourceBinder(Context context, Field field, Class annotationClass, String identifierType) {
         mField = field;
         if (!mField.isAccessible()) {
@@ -77,7 +79,9 @@ public abstract class FieldResourceBinder implements FieldBinder {
     protected abstract void onApply(InjectionClass srcClass, Object src, InjectionClass dstClass, Object dst) throws Exception;
 
 
+    @Keep
     public static class FieldBinderView extends FieldResourceBinder {
+        @Keep
         public FieldBinderView(Context context, Field field, Class annotationClass) {
             super(context, field, annotationClass, "id");
             valid(View.class);
@@ -105,7 +109,9 @@ public abstract class FieldResourceBinder implements FieldBinder {
     /**
      * IDE対策のため、命名を変えておく
      */
+    @Keep
     public static class FieldBinderString extends FieldResourceBinder {
+        @Keep
         public FieldBinderString(Context context, Field field, Class annotationClass) {
             super(context, field, annotationClass, "string");
         }
@@ -117,7 +123,9 @@ public abstract class FieldResourceBinder implements FieldBinder {
         }
     }
 
+    @Keep
     public static class FieldBinderInteger extends FieldResourceBinder {
+        @Keep
         public FieldBinderInteger(Context context, Field field, Class annotationClass) {
             super(context, field, annotationClass, "integer");
         }
@@ -129,7 +137,9 @@ public abstract class FieldResourceBinder implements FieldBinder {
         }
     }
 
+    @Keep
     public static class FieldBinderStringArray extends FieldResourceBinder {
+        @Keep
         public FieldBinderStringArray(Context context, Field field, Class annotationClass) {
             super(context, field, annotationClass, "array");
             valid(String[].class);
