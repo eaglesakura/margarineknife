@@ -36,7 +36,7 @@ if (!hasProperty("EGLIBRARY_COMPILE_LOCAL")) {
 }
 // check env
 if (!hasProperty("ANDROID_SUPPORT_LIB_VERSION")) {
-    ext.ANDROID_SUPPORT_LIB_VERSION = "25.+"
+    ext.ANDROID_SUPPORT_LIB_VERSION = "25.2.+"
 }
 
 dependencies {
@@ -100,7 +100,7 @@ tasks.withType(Test) {
 
 // check env
 if (!hasProperty("ANDROID_SUPPORT_LIB_VERSION")) {
-    ext.ANDROID_SUPPORT_LIB_VERSION = "25.+"
+    ext.ANDROID_SUPPORT_LIB_VERSION = "25.2.+"
 }
 
 apply plugin: 'maven'
@@ -186,7 +186,7 @@ task uploadJavadoc << {
 /**
  * 依存している固定ライブラリバージョンを取得する
  */
-String dependenceisVersion(String libName, String defVersion) {
+String dependenciesVersion(String libName, String defVersion) {
     def lines = [];
     def target = file("dependencies.txt");
     if (!target.file) {
