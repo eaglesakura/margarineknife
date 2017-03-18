@@ -17,8 +17,8 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.3'
-        classpath 'me.tatarka:gradle-retrolambda:3.2.5' // support Lambda
+        classpath 'com.android.tools.build:gradle:2.3.0'
+        classpath 'me.tatarka:gradle-retrolambda:3.5.0' // support Lambda
     }
 }
 
@@ -34,18 +34,12 @@ apply plugin: 'me.tatarka.retrolambda' /* Android Lambda Support */
 if (!hasProperty("EGLIBRARY_COMPILE_LOCAL")) {
     ext.EGLIBRARY_COMPILE_LOCAL = false
 }
-// check env
-if (!hasProperty("ANDROID_SUPPORT_LIB_VERSION")) {
-    ext.ANDROID_SUPPORT_LIB_VERSION = "25.2.+"
-}
 
 dependencies {
     /**
      * support libs
      */
-//    provided "com.android.support:support-v4:${ANDROID_SUPPORT_LIB_VERSION}"
-    compile "com.android.support:support-v4:${ANDROID_SUPPORT_LIB_VERSION}"
-//    compile 'com.android.support:support-annotations:+'
+    compile "com.android.support:support-v4:25.3.0"
 
     if (EGLIBRARY_COMPILE_LOCAL) {
         testCompile project(":eglibrary:android-unittest-support")
@@ -54,11 +48,11 @@ dependencies {
         androidTestCompile project(":eglibrary:android-thread")
         androidTestCompile project(":eglibrary:android-devicetest-support")
     } else {
-        testCompile 'com.eaglesakura:android-unittest-support:1.+'
+        testCompile "com.eaglesakura:android-unittest-support:1.3.205"
 
-        androidTestCompile 'com.eaglesakura:android-simple-utils:1.+'
-        androidTestCompile 'com.eaglesakura:android-thread:1.+'
-        androidTestCompile 'com.eaglesakura:android-devicetest-support:2.+'
+        androidTestCompile "com.eaglesakura:android-simple-utils:1.0.543"
+        androidTestCompile "com.eaglesakura:android-thread:1.1.459"
+        androidTestCompile "com.eaglesakura:android-devicetest-support:2.0.267"
     }
 }
 
