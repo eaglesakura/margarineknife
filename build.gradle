@@ -155,19 +155,6 @@ uploadArchives {
     }
 }
 
-[uploadArchives.repositories.mavenDeployer]*.pom*.whenConfigured { pom ->
-    pom.project {
-        inceptionYear '2016'
-        packaging 'aar'
-        licenses {
-            license {
-                name 'MIT License'
-                url 'https://raw.githubusercontent.com/eaglesakura/onactivityresult-invoke/master/LICENSE.txt'
-            }
-        }
-    }
-}
-
 task uploadJavadoc << {
     def src = file("build/docs/javadoc/");
     def dst = new File("${ARTIFACT_INSTALL_TARGET.absolutePath}/doc/${ARTIFACT_NAME}/");
@@ -175,43 +162,6 @@ task uploadJavadoc << {
     dst.mkdirs();
 
     ["/usr/bin/rsync", "-a", src.absolutePath, dst.absolutePath].execute().text;
-}
-
-/**
- * 依存している固定ライブラリバージョンを取得する
- */
-String dependenciesVersion(String libName, String defVersion) {
-    def lines = [];
-    def target = file("dependencies.txt");
-    if (!target.file) {
-        return defVersion;
-    }
-
-    target.text.eachLine {
-        if (!it.contains(libName) || it.contains("(")) {
-            return;
-        }
-
-        def tokens = it.split(" ");
-        if (tokens == null || tokens.length == 0) {
-            return;
-        }
-
-        // バージョン固定されている場合は"lib:name:1.0.0"とフルで取得できてしまうので、分割して再度最後を取得する
-        def version = tokens[tokens.length - 1];
-        if (version.startsWith(libName)) {
-            def splitVersions = version.split(":");
-            version = splitVersions[splitVersions.length - 1];
-        }
-        lines += version;
-    }
-    if (lines.empty) {
-        println("${libName} -> ${defVersion}")
-        return defVersion;
-    } else {
-        println("${libName} -> ${lines[0]}")
-        return lines[0];
-    }
 }
 
 /**
