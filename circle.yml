@@ -23,8 +23,8 @@ deployment:
   canary:
     branch: /^v[0-9]\..*$/
     commands:
-    - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/build-deploy-maven.sh)"
+      - echo "skip upload"
   develop:
     branch: develop
     commands:
-    - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/build-deploy-local.sh)"
+      - ./gradlew bintrayUpload
