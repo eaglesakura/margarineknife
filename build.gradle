@@ -52,13 +52,13 @@ dependencies {
     if (EGLIBRARY_COMPILE_LOCAL) {
         testCompile project(":eglibrary:android-unittest-support")
 
-        androidTestCompile project(":eglibrary:android-simple-utils")
+        androidTestCompile project(":eglibrary:android-commons")
         androidTestCompile project(":eglibrary:android-devicetest-support")
     } else {
-        testCompile "com.eaglesakura:android-unittest-support:1.4.206"
+        testCompile "com.eaglesakura:android-unittest-support:1.4.207"
 
-        androidTestCompile "com.eaglesakura:android-simple-utils:2.0.548"
-        androidTestCompile "com.eaglesakura:android-devicetest-support:2.1.270"
+        androidTestCompile "com.eaglesakura:android-commons:2.1.3"
+        androidTestCompile "com.eaglesakura:android-devicetest-support:2.1.272"
     }
 }
 
@@ -96,11 +96,6 @@ tasks.withType(Test) {
             targetCompatibility = JavaVersion.VERSION_1_8
         }
     }
-}
-
-// check env
-if (!hasProperty("ANDROID_SUPPORT_LIB_VERSION")) {
-    ext.ANDROID_SUPPORT_LIB_VERSION = "25.2.+"
 }
 
 task sourcesJar(type: Jar) {
