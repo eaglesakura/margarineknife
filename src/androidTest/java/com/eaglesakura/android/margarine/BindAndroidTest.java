@@ -1,10 +1,11 @@
 package com.eaglesakura.android.margarine;
 
-import com.eaglesakura.android.devicetest.ModuleTestCase;
-import com.eaglesakura.util.LogUtil;
+import com.eaglesakura.android.devicetest.DeviceTestCase;
+
+import org.junit.Test;
 
 import android.annotation.SuppressLint;
-import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -15,8 +16,9 @@ import java.util.Arrays;
 import java.util.List;
 
 @SuppressLint("all")
-public class BindAndroidTest extends ModuleTestCase {
+public class BindAndroidTest extends DeviceTestCase {
 
+    @Test
     public void test_Inject対象フィールド一覧を取得できる() throws Exception {
         InjectionClass target = new InjectionClass(BindTarget.class);
         List<FieldBinder> fields = target.listBindFields(getContext());
@@ -24,6 +26,7 @@ public class BindAndroidTest extends ModuleTestCase {
         assertEquals(fields.size(), 7);
     }
 
+    @Test
     public void test_Inject対象メソッド一覧を取得できる() throws Exception {
         InjectionClass target = new InjectionClass(BindTarget.class);
         List<MethodBinder> binders = target.listBindMethods(getContext());
@@ -32,6 +35,7 @@ public class BindAndroidTest extends ModuleTestCase {
         assertEquals(binders.size(), 6);
     }
 
+    @Test
     public void test_Nullable制約を加えられる() {
         View view = View.inflate(getContext(), com.eaglesakura.android.margarine.test.R.layout.view_bindtest, null);
         NullableBindTarget dst = new NullableBindTarget();
@@ -40,6 +44,7 @@ public class BindAndroidTest extends ModuleTestCase {
         assertNull(dst.mView);
     }
 
+    @Test
     public void test_Nullable制約無しではエラーになる() {
         View view = View.inflate(getContext(), com.eaglesakura.android.margarine.test.R.layout.view_bindtest, null);
         NullableBindTarget dst = new NullableBindTarget();
@@ -51,6 +56,7 @@ public class BindAndroidTest extends ModuleTestCase {
         }
     }
 
+    @Test
     public void test_アノテーションにバインドを行う() {
         View view = View.inflate(getContext(), com.eaglesakura.android.margarine.test.R.layout.view_bindtest, null);
         BindTarget dst = new BindTarget();
@@ -85,6 +91,7 @@ public class BindAndroidTest extends ModuleTestCase {
         assertTrue(dst.mChecked);
     }
 
+    @Test
     public void test_Viewバインドに失敗する() throws Exception {
         try {
             View view = View.inflate(getContext(), com.eaglesakura.android.margarine.test.R.layout.view_bindtest, null);
@@ -96,6 +103,7 @@ public class BindAndroidTest extends ModuleTestCase {
         }
     }
 
+    @Test
     public void test_CheckedChangeバインドに失敗する() throws Exception {
         try {
             View view = View.inflate(getContext(), com.eaglesakura.android.margarine.test.R.layout.view_bindtest, null);
@@ -159,20 +167,20 @@ public class BindAndroidTest extends ModuleTestCase {
 
         @OnClick(resName = "BindTest.View")
         void clickView(View view) {
-            LogUtil.out(getClass().getSimpleName(), "clickView(View view)");
+            Log.d(getClass().getSimpleName(), "clickView(View view)");
             mClickedView = true;
         }
 
         @OnLongClick(resName = "BindTest.View")
         boolean longClickView(View view) {
-            LogUtil.out(getClass().getSimpleName(), "longClickView(View view)");
+            Log.d(getClass().getSimpleName(), "longClickView(View view)");
             mLongClicked = true;
             return true;
         }
 
         @OnCheckedChanged(resName = "BindTest.CheckBox")
         void checkedChange(boolean isChecked) {
-            LogUtil.out(getClass().getSimpleName(), "checkedChange(CompoundButton button, boolean isChecked)");
+            Log.d(getClass().getSimpleName(), "checkedChange(CompoundButton button, boolean isChecked)");
             mChecked = isChecked;
         }
 
@@ -180,10 +188,12 @@ public class BindAndroidTest extends ModuleTestCase {
         void nullableClickMethod() {
             fail();
         }
+
         @OnLongClick(resName = "DummyRes2", nullable = true)
         void nullableLongClickMethod() {
             fail();
         }
+
         @OnCheckedChanged(resName = "DummyRes", nullable = true)
         void nullableCheckedkMethod(boolean check) {
             fail();

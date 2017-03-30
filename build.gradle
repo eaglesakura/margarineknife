@@ -75,6 +75,11 @@ android {
         minSdkVersion 10
         targetSdkVersion 25
         consumerProguardFiles 'proguard-rules.pro'
+
+        /**
+         * UnitTest
+         */
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     lintOptions {
