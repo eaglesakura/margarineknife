@@ -47,7 +47,7 @@ dependencies {
     /**
      * support libs
      */
-    compile "com.android.support:support-v4:25.3.0"
+    compile "com.android.support:support-v4:25.3.1"
 
     if (EGLIBRARY_COMPILE_LOCAL) {
         testCompile project(":eglibrary:android-unittest-support")
@@ -72,7 +72,7 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 10
+        minSdkVersion 15
         targetSdkVersion 25
         consumerProguardFiles 'proguard-rules.pro'
 
