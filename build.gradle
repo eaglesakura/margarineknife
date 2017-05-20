@@ -6,35 +6,35 @@
  * 1.2.x  : 実験的に追加した依存性注入クラスを別ライブラリに移行
  * 1.2.x  : Menu用のBinderを追加
  * 1.3.x  : bintrayに移行
+ * 1.4.x  : AS3.0対応
  */
-def ARTIFACT_VERSION = "1.3"
+def ARTIFACT_VERSION = "1.4"
 def REPOSITORY_NAME = "maven"
 def BINTRAY_LICENSES = ["MIT"]
 def BINTRAY_LABELS = ["android"]
 def BINTRAY_API_KEY = System.env.BINTRAY_API_KEY
 def BINTRAY_GPG_PASS = System.env.BINTRAY_GPG_PASS
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     repositories {
         jcenter()
+        maven { url "https://maven.google.com" }
         maven { url "https://dl.bintray.com/eaglesakura/maven/" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.0'
-        classpath 'me.tatarka:gradle-retrolambda:3.5.0' // support Lambda
+        classpath 'com.android.tools.build:gradle:3.0.0-alpha1'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
     }
 }
 
 repositories {
-    mavenCentral()
+    jcenter()
+    maven { url "https://maven.google.com" }
     maven { url "https://dl.bintray.com/eaglesakura/maven/" }
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'me.tatarka.retrolambda' /* Android Lambda Support */
 group = "com.eaglesakura"
 version = ARTIFACT_VERSION + getArtifactVersionSuffix()
 
@@ -47,18 +47,18 @@ dependencies {
     /**
      * support libs
      */
-    compile "com.android.support:support-v4:25.3.1"
+    implementation "com.android.support:support-v4:25.3.1"
 
     if (EGLIBRARY_COMPILE_LOCAL) {
-        testCompile project(":eglibrary:android-unittest-support")
+        testImplementation project(":eglibrary:android-unittest-support")
 
-        androidTestCompile project(":eglibrary:android-commons")
-        androidTestCompile project(":eglibrary:android-devicetest-support")
+        androidTestImplementation project(":eglibrary:android-commons")
+        androidTestImplementation project(":eglibrary:android-devicetest-support")
     } else {
-        testCompile "com.eaglesakura:android-unittest-support:1.4.207"
+        testImplementation "com.eaglesakura:android-unittest-support:1.4.207"
 
-        androidTestCompile "com.eaglesakura:android-commons:2.1.3"
-        androidTestCompile "com.eaglesakura:android-devicetest-support:2.1.272"
+        androidTestImplementation "com.eaglesakura:android-commons:2.1.3"
+        androidTestImplementation "com.eaglesakura:android-devicetest-support:2.1.272"
     }
 }
 
@@ -68,7 +68,7 @@ android {
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     defaultConfig {
@@ -84,22 +84,6 @@ android {
 
     lintOptions {
         disable "NewApi"
-    }
-}
-
-/**
- * UnitTest & retro lambda
- */
-tasks.withType(Test) {
-    project.tasks
-            .findAll {
-        task -> (task.name ==~ /compile.*?TestJava.*?/)
-    }
-    .each { task ->
-        task.doFirst {
-            sourceCompatibility = JavaVersion.VERSION_1_8
-            targetCompatibility = JavaVersion.VERSION_1_8
-        }
     }
 }
 
