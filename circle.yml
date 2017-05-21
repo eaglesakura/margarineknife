@@ -23,8 +23,8 @@ deployment:
   canary:
     branch: /^v[0-9]\..*$/
     commands:
-      - echo "skip upload"
+      - ./gradlew bintrayUpload
   develop:
     branch: develop
     commands:
-      - ./gradlew bintrayUpload
+      - echo "skip upload"
