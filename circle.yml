@@ -20,7 +20,11 @@ test:
   override:
     - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/build-test.sh)"
 deployment:
-  canary:
+  release:
+    tag: /^v[0-9]\..*$/
+    commands:
+      - ./gradlew bintrayUpload
+  snapshot:
     branch: /^v[0-9]\..*$/
     commands:
       - ./gradlew bintrayUpload

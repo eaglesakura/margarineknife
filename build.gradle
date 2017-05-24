@@ -7,8 +7,10 @@
  * 1.2.x  : Menu用のBinderを追加
  * 1.3.x  : bintrayに移行
  * 1.4.x  : AS3.0対応
+ * 1.5.x  : バージョン規則を変更
  */
-def ARTIFACT_VERSION = "1.4"
+def ARTIFACT_VERSION = System.env.CIRCLE_TAG == null ?
+        "1.5" : System.env.CIRCLE_TAG.substring(System.env.CIRCLE_TAG.indexOf('v') + 1)
 def REPOSITORY_NAME = "maven"
 def BINTRAY_LICENSES = ["MIT"]
 def BINTRAY_LABELS = ["android"]
@@ -138,9 +140,16 @@ android.libraryVariants.all { variant ->
  * CircleCIの場合、バージョン末尾にビルド番号を付与する
  */
 def getArtifactVersionSuffix() {
+    String CIRCLE_TAG = System.env.CIRCLE_TAG
+
+    if (CIRCLE_TAG != null) {
+        // TAGがある場合それを直接利用する
+        return ""
+    }
+
     if (System.env.CIRCLE_BUILD_NUM != null) {
         // CircleCIのバージョンが指定されているので、そちらを利用する
-        return ".${System.env.CIRCLE_BUILD_NUM}"
+        return ".build-${System.env.CIRCLE_BUILD_NUM}"
     } else {
         return ".snapshot"
     }
