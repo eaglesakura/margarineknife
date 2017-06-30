@@ -40,28 +40,16 @@ apply plugin: 'com.android.library'
 group = "com.eaglesakura"
 version = ARTIFACT_VERSION + getArtifactVersionSuffix()
 
-// Local or maven
-if (!hasProperty("EGLIBRARY_COMPILE_LOCAL")) {
-    ext.EGLIBRARY_COMPILE_LOCAL = false
-}
-
 dependencies {
     /**
      * support libs
      */
     compile "com.android.support:support-v4:25.3.1"
 
-    if (EGLIBRARY_COMPILE_LOCAL) {
-        testImplementation project(":eglibrary:android-unittest-support")
+    testCompile "com.eaglesakura:android-unittest-support:1.5.211"
 
-        androidTestImplementation project(":eglibrary:android-commons")
-        androidTestImplementation project(":eglibrary:android-devicetest-support")
-    } else {
-        testCompile "com.eaglesakura:android-unittest-support:1.5.211"
-
-        androidTestCompile "com.eaglesakura:android-commons:2.2.11"
-        androidTestCompile "com.eaglesakura:android-devicetest-support:2.2.275"
-    }
+    androidTestCompile "com.eaglesakura:android-commons:2.2.11"
+    androidTestCompile "com.eaglesakura:android-devicetest-support:2.2.275"
 }
 
 android {
