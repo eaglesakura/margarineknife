@@ -24,7 +24,7 @@ buildscript {
         maven { url "https://dl.bintray.com/eaglesakura/maven/" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-alpha4'
+        classpath 'com.android.tools.build:gradle:3.0.0'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
     }
@@ -44,17 +44,17 @@ dependencies {
     /**
      * support libs
      */
-    compile "com.android.support:support-v4:25.3.1"
+    implementation "com.android.support:support-v4:26.1.0"
 
-    testCompile "com.eaglesakura:android-unittest-support:1.5.211"
+    testImplementation "com.eaglesakura:android-unittest-support:1.6.0"
 
-    androidTestCompile "com.eaglesakura:android-commons:2.2.11"
-    androidTestCompile "com.eaglesakura:android-devicetest-support:2.2.275"
+    androidTestImplementation "com.eaglesakura:android-commons:2.3.4"
+    androidTestImplementation "com.eaglesakura:android-devicetest-support:2.3.1"
 }
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.2"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -63,7 +63,7 @@ android {
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 25
+        targetSdkVersion 26
         consumerProguardFiles 'proguard-rules.pro'
 
         /**
